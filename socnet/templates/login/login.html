@@ -43,15 +43,15 @@
 
     </div>
   </div>
-  <form class="register-form" action="#">
-
+  <form class="register-form" action="/login/?next=/" method="post">
+    {% csrf_token %}
 
     <div class="form-row">
 
       <div class="col">
         <div class="form-group mb-0">
           <label for="username"></label>
-          <input type="email" class="form-control" id="username" placeholder="Введите почту">
+          <input type="text" class="form-control" id="username" name="username" placeholder="Введите логин">
         </div>
       </div>
 
@@ -59,13 +59,13 @@
 
     <div class="form-group mb-0">
       <label for="password"></label>
-      <input type="password" class="form-control" id="password" placeholder="Введите пароль">
+      <input type="password" class="form-control" id="password" name="password" placeholder="Введите пароль">
     </div>
 
 
     <div class="col-md-12 text-center mt-5 px-0">
-      <a href="../posts/posts.html" class="text-decoration-none">
-        <button type="button" class="btn btn-primary btn-lg btn-block">
+      <a class="text-decoration-none">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">
           Войти
         </button>
       </a>

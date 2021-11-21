@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,12 +15,14 @@
 <body>
 <header>
 
+
+
   <img src="{% static 'src/images/logo.jpg' %}" alt="logo" class="logo">
 
   <div class="person-info-wrapper" id='person-info-wrapper-id' onclick="rotate(event)">
 
-    <img src="{% static 'src/images/person.png' %}" alt="person" class="person">
-    <span class="name">Ерасыл</span>
+{#    <img src="{% static 'src/images/person.png' %}" alt="person" class="person">#}
+    <span class="name">Menu</span>
     <img src="{% static 'src/icon/down-arrow.svg' %}" alt="down-arrow" id="down-icon">
 
   </div>
@@ -32,9 +33,9 @@
 <div class="popover-wrapper">
   <div class="popover-content" id="header-popover">
     <div class="popover-menu-ul">
-      <a href="profile">Профиль</a>
+      <a href="/profile">Профиль</a>
       <a href="#">Настройки</a>
-      <a href="#">Выйти</a>
+      <a href="/logout">Выйти</a>
     </div>
   </div>
 </div>
