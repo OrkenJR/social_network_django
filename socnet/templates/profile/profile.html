@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Профиль{% endblock %}
+{% block style %}
+        <link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'style/profile.css' %}">
+{% endblock %}
+{% block script %}
+     <script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <section class="container-* person-info-container">
+      <div class="row">
+
+        <div class="col d-flex flex-column justify-content-between">
+
+          <div class="person-name px-3">
+            Нагашбайулы Оркен
+          </div>
+
+          <div class="p-3">
+            Цитата:
+            <span class="font-weight-bold">
+              Lorem ipsum
+            </span>
+          </div>
+
+          <div class="p-3">
+            День рождения:
+            <span class="font-weight-bold">
+              xx:xx:xxxx
+            </span>
+          </div>
+
+          <div class="ui-link-wrapper">
+            Группы:
+            <span class="ui-link font-weight-bold">
+              4
+            </span>
+          </div>
+
+          <div class="ui-link-wrapper">
+            Друзья:
+            <span class="ui-link font-weight-bold">
+              5
+            </span>
+          </div>
+
+        </div>
+
+        <div class="col d-flex flex-column justify-content-between align-items-center">
+          <img src="../../../static/src/images/person.png" class="person-avatar">
+
+          <button class="btn btn-outline-secondary border" type="button">Изменить аватар</button>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- FIRST POST -->
+
+    <section class="post container-*">
+
+      <!-- POST HEADER -->
+
+      <div class="row">
+
+        <div class="col-1 group-logo-container">
+          <img src="../../../static/src/images/logo.jpg" alt="group-logo" class="logo">
+        </div>
+
+        <div class="col d-flex align-items-center justify-content-between">
+          <span class="group-title">Reddit</span>
+          <span class="text-muted post-date">26 сентября 23:44</span>
+        </div>
+
+      </div>
+
+      <!-- POST BODY -->
+
+      <div class="row mt-3">
+        <div class="col">
+          <img src="../../../static/src/images/horizontal.jpg" alt="image" class="single-image">
+        </div>
+      </div>
+
+      <!-- POST FOOTER -->
+
+      <div class="row px-3 pt-3">
+
+        <div class="like-wrapper">
+          <img src="../../../static/src/icon/like.svg" alt="like" class="like-icon">
+          <span class="like-counter">15</span>
+          <img src="../../../static/src/icon/like.svg" alt="dislike" class="dislike-icon">
+        </div>
+
+        <div class="comment-wrapper">
+          <img src="../../../static/src/icon/comment.svg" alt="comment" class="comment">
+          <span class="comment-counter">2</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SECOND POST -->
+
+    <section class="post container-*">
+
+      <!-- POST HEADER -->
+
+      <div class="row">
+
+        <div class="col-1 group-logo-container">
+          <img src="../../../static/src/images/logo.jpg" alt="group-logo" class="logo">
+        </div>
+
+        <div class="col d-flex align-items-center justify-content-between">
+          <span class="group-title">Reddit</span>
+          <span class="text-muted post-date">26 сентября 23:44</span>
+        </div>
+
+      </div>
+
+      <!-- POST BODY -->
+
+      <div class="row mt-3">
+        <div class="col">
+          <img src="../../../static/src/images/vertical.jpg" alt="image" class="single-image">
+        </div>
+      </div>
+
+      <!-- POST FOOTER -->
+
+      <div class="row px-3 pt-3">
+
+        <div class="like-wrapper">
+          <img src="../../../static/src/icon/like.svg" alt="like" class="like-icon">
+          <span class="like-counter">15</span>
+          <img src="../../../static/src/icon/like.svg" alt="dislike" class="dislike-icon">
+        </div>
+
+        <div class="comment-wrapper">
+          <img src="../../../static/src/icon/comment.svg" alt="comment" class="comment">
+          <span class="comment-counter">2</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- THIRD POST -->
+
+    <section class="post container-*">
+
+      <!-- POST HEADER -->
+
+      <div class="row">
+
+        <div class="col-1 group-logo-container">
+          <img src="../../../static/src/images/logo.jpg" alt="group-logo" class="logo">
+        </div>
+
+        <div class="col d-flex align-items-center justify-content-between">
+          <span class="group-title">Reddit</span>
+          <span class="text-muted post-date">26 сентября 23:44</span>
+        </div>
+
+      </div>
+
+      <!-- POST BODY -->
+
+      <div class="row mt-3">
+        <div class="col">
+          <p class="text-justify mb-0">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ac ex magna. Vestibulum efficitur leo nibh, ut
+            imperdiet orci sollicitudin nec. Curabitur ut suscipit nulla. Pellentesque ut est faucibus urna lacinia
+            elementum. Vestibulum id tincidunt leo. Vestibulum in efficitur arcu. Integer quis ornare quam. Nam
+            scelerisque bibendum pellentesque. Cras eu diam eget ante gravida faucibus. Suspendisse ut nibh eu nunc
+            rutrum
+            aliquet. Vivamus vehicula est nulla, quis dapibus magna rutrum vitae. Cras ultrices, libero non porta
+            scelerisque, risus quam mattis ipsum, nec pellentesque sapien tortor quis enim. Donec hendrerit risus nec
+            sagittis faucibus. Curabitur sit amet elit augue. Donec vestibulum interdum volutpat.
+          </p>
+        </div>
+      </div>
+
+      <!-- POST FOOTER -->
+
+      <div class="row px-3 pt-3">
+
+        <div class="like-wrapper">
+          <img src="../../../static/src/icon/like.svg" alt="like" class="like-icon">
+          <span class="like-counter">15</span>
+          <img src="../../../static/src/icon/like.svg" alt="dislike" class="dislike-icon">
+        </div>
+
+        <div class="comment-wrapper">
+          <img src="../../../static/src/icon/comment.svg" alt="comment" class="comment">
+          <span class="comment-counter">2</span>
+        </div>
+      </div>
+
+    </section>
+{% endblock %}

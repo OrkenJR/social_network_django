@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Посты</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="../../../static/style/global.css">
+  <link rel="stylesheet" type="text/css" href="../../../static/style/config.css">
+  <link rel="stylesheet" type="text/css" href="../../../static/style/post.css">
+
+  <script src="../../../static/js/config.js"></script>
+
+</head>
+<body>
+
+<header>
+
+  <img src="../../../static/src/images/logo.jpg" alt="logo" class="logo">
+
+  <div class="person-info-wrapper" id='person-info-wrapper-id' onclick="rotate(event)">
+
+    <img src="../../../static/src/images/person.png" alt="person" class="person">
+    <span class="name">Ерасыл</span>
+    <img src="../../../static/src/icon/down-arrow.svg" alt="down-arrow" id="down-icon">
+
+  </div>
+
+
+</header>
+
+<div class="popover-wrapper">
+  <div class="popover-content" id="header-popover">
+    <div class="popover-menu-ul">
+      <a href="../profile/profile.html">Профиль</a>
+      <a href="/config.html">Настройки</a>
+      <a href="../login/login.html">Выйти</a>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- NAVBAR -->
+
+  <nav>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="../posts/posts.html">Посты</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../messages-list/messages-list.html">Сообщения</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../friends-list/friends-list.html">Друзья</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../groups-list/groups-list.html">Группы</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="main-body container-*">
+
+    <form class="person-config p-3">
+      <h2 class="row mb-3"> Настройки</h2>
+
+      <div class="row">
+        <label for="name-input">Имя:</label>
+        <input
+          id="name-input"
+          type="text"
+          class="form-control
+          input-sm" placeholder="Введите имя"
+          value="Нагашбайулы Оркен">
+      </div>
+
+      <div class="row mt-3">
+        <label for="quote-input">Цитата:</label>
+        <input
+          id="quote-input"
+          type="text"
+          class="form-control input-sm"
+          placeholder="Введите цитату"
+          value="Lorem ipsum">
+      </div>
+
+      <div class="row mt-3">
+        <label for="birthday-input">Цитата:</label>
+        <input
+          id="birthday-input"
+          type="date"
+          class="form-control input-sm"
+          placeholder="Введите день рождение">
+      </div>
+
+      <div class="row mt-3">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitch1">
+          <label class="custom-control-label" for="customSwitch1">Закрытый аккаунт</label>
+        </div>
+      </div>
+
+      <button class="btn btn-outline-secondary border mt-3" type="button">Сохранить изменения</button>
+
+    </form>
+
+
+  </div>
+
+</main>
+
+</body>
+</html>

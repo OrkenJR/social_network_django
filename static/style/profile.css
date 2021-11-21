@@ -1,0 +1,50 @@
+.row {
+  background-color: #FFFFFF;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.person-avatar {
+  width: 200px;
+  height: 200px;
+}
+
+.btn {
+  margin-top: 1rem;
+  width: 75%;
+}
+
+.person-name {
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.ui-link-wrapper {
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: 5px;
+
+  transition: background-color 0.35s;
+}
+
+.ui-link-wrapper:hover {
+  background-color: rgb(227, 228, 230);
+}
+
+.ui-link {
+  color: #2a5885;
+}
+
+@media (max-width: 700px) {
+  .person-avatar {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 400px) {
+  .person-avatar {
+    width: 50px;
+    height: 50px;
+  }
+}

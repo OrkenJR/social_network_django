@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Друзья{% endblock %}
+{% block style %}
+        <link rel="stylesheet" type="text/css" href="{% static 'style/friends-list.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'style/listing.css' %}">
+{% endblock %}
+{% block script %}
+     <script src="{% static 'js/friends-list.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <section class="row search-bar">
+
+      <div class="input-group">
+        <!--suppress HtmlFormInputWithoutLabel -->
+        <input class="form-control mr-1 search-input" type="text" placeholder="Найти друзей...">
+        <button class="btn btn-outline-secondary border" type="button">Искать</button>
+      </div>
+    </section>
+
+    <!-- 1 FRIEND -->
+
+    <a href="../profile/profile.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Ерасыл</div>
+            <div class="list-element-text mb-1">IITU</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 2 FRIEND -->
+
+    <a href="../profile/profile.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Оркен</div>
+            <div class="list-element-text mb-1">IITU</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 3 FRIEND -->
+
+    <a href="../profile/profile.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Ерасыл1</div>
+            <div class="list-element-text mb-1">IITU</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 4 FRIEND -->
+
+    <a href="../profile/profile.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Ерасыл2</div>
+            <div class="list-element-text mb-1">IITU</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 5 FRIEND -->
+
+    <a href="../profile/profile.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Оркен1</div>
+            <div class="list-element-text mb-1">IITU</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 6 FRIEND -->
+
+    <a href="../profile/profile.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Оркен2</div>
+            <div class="list-element-text mb-1">IITU</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+{% endblock %}

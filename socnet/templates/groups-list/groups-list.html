@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Группы{% endblock %}
+{% block style %}
+        <link rel="stylesheet" type="text/css" href="{% static 'style/listing.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'style/groups-list.css' %}">
+{% endblock %}
+{% block script %}
+     <script src="{% static 'js/groups-list.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <!-- SEARCH-BAR -->
+
+    <section class="row search-bar">
+
+      <div class="input-group">
+        <!--suppress HtmlFormInputWithoutLabel -->
+        <input class="form-control mr-1 search-input" type="text" placeholder="Найти группу...">
+        <button class="btn btn-outline-secondary border" type="button">Искать</button>
+      </div>
+    </section>
+
+    <!-- 1 GROUP -->
+
+    <a href="../group/group.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/vk-logo.png" alt="group-logo" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Reddit</div>
+            <div class="list-element-text mb-1">1 232 121 подписчиков</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 2 GROUP -->
+
+    <a href="../group/group.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/vk-logo.png" alt="group-logo" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Reddit</div>
+            <div class="list-element-text mb-1">1 232 121 подписчиков</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 3 GROUP -->
+
+    <a href="../group/group.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/vk-logo.png" alt="group-logo" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Reddit</div>
+            <div class="list-element-text mb-1">1 232 121 подписчиков</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 4 GROUP -->
+
+    <a href="../group/group.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/vk-logo.png" alt="group-logo" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Reddit</div>
+            <div class="list-element-text mb-1">1 232 121 подписчиков</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 5 GROUP -->
+
+    <a href="../group/group.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/vk-logo.png" alt="group-logo" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Reddit</div>
+            <div class="list-element-text mb-1">1 232 121 подписчиков</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+
+    <!-- 6 GROUP -->
+
+    <a href="../group/group.html">
+      <section class="row list-element">
+        <div class="list-element-image-wrapper">
+          <img src="../../../static/src/images/vk-logo.png" alt="group-logo" class="list-element-image">
+        </div>
+
+        <div class="col-6">
+          <div class="list-element-info">
+            <div class="list-element-title">Reddit</div>
+            <div class="list-element-text mb-1">1 232 121 подписчиков</div>
+          </div>
+        </div>
+
+      </section>
+    </a>
+{% endblock %}

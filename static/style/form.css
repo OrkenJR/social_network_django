@@ -1,0 +1,35 @@
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+.form-wrapper{
+    width: 75%;
+    height: auto;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+}
+
+.register-form{
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid #dadde1;
+    box-sizing: border-box;
+}
+
+.radio-custom-wrapper{
+    border: 1px solid #ced4da;
+    align-items: center;
+    border-radius: .25rem;
+    padding: .25rem;
+}
+
+.text-decoration-none:hover {
+    text-decoration: none;
+}
+

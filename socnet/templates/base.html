@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Default{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/global.css' %}">
+    {% block style %}{% endblock %}
+    {% block script %}{% endblock %}
+</head>
+<body>
+<header>
+
+  <img src="{% static 'src/images/logo.jpg' %}" alt="logo" class="logo">
+
+  <div class="person-info-wrapper" id='person-info-wrapper-id' onclick="rotate(event)">
+
+    <img src="{% static 'src/images/person.png' %}" alt="person" class="person">
+    <span class="name">Ерасыл</span>
+    <img src="{% static 'src/icon/down-arrow.svg' %}" alt="down-arrow" id="down-icon">
+
+  </div>
+
+
+</header>
+
+<div class="popover-wrapper">
+  <div class="popover-content" id="header-popover">
+    <div class="popover-menu-ul">
+      <a href="profile">Профиль</a>
+      <a href="#">Настройки</a>
+      <a href="#">Выйти</a>
+    </div>
+  </div>
+</div>
+
+<main>
+     <nav>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'home' %}">Посты</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'messages' %}">Сообщения</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'friends' %}">Друзья</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'groups' %}">Группы</a>
+      </li>
+    </ul>
+  </nav>
+
+    <div class="main-body container-*">
+            {% block content %}{% endblock %}
+    </div>
+
+</main>
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+</body>
+</html>
