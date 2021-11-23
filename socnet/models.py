@@ -19,5 +19,8 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name='likes')
     dislikes = models.ManyToManyField(User, related_name='dislikes')
 
+    def get_likes(self):
+        return self.likes.count() - self.dislikes.count()
+
     def __str__(self):
         return self.body

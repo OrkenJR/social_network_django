@@ -18,19 +18,19 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-import socnet.views
+from .views import *
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', socnet.views.home, name='home'),
-    path('profile/', socnet.views.profile, name='profile'),
-    path('messages/', socnet.views.messages, name='messages'),
-    path('friends/', socnet.views.friends, name='friends'),
-    path('groups/', socnet.views.groups, name='groups'),
-    # path('login/', socnet.views.login, name='login'),
-    path('logout/', socnet.views.logout, name='logout'),
+    path('', HomeView.as_view(), name='home'),
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('messages/', messages, name='messages'),
+    path('friends/', friends, name='friends'),
+    path('groups/', groups, name='groups'),
+    # path('login/', login, name='login'),
+    path('logout/', logout, name='logout'),
     path('login/', auth_views.LoginView.as_view(template_name='login/login.html'), name='login'),
-    url('like', socnet.views.like, name='like'),
+    url('like', like, name='like'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

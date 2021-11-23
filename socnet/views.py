@@ -1,18 +1,16 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
+from django.views.generic import ListView
+
 from .models import Post, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import logout as django_logout
-from django import template
-
-register = template.Library()
-
 
 
 def like(request):
-
     post = Post.objects.get(id=request.POST.get("post_id"))
     type = request.POST.get('type')
     current_user = request.user
@@ -38,31 +36,43 @@ def like(request):
             post.dislikes.add(current_user)
             post.likes.remove(current_user)
 
-
-
     context = {
-        "posts": Post.objects.all()
+        "posts": Post.objects.order_by('-date_posted')
     }
-    return render(request, "posts/posts.html", context)
-
-
-@login_required
-def home(request):
-    current_user = request.user
-    context = {
-        "posts": Post.objects.all()
+    response = {
+        'is_liked': is_liked
     }
-    return render(request, "posts/posts.html", context)
+    return JsonResponse(response)
 
 
-def profile(request):
-    current_user = request.user
-    context = {
-        "posts": Post.objects.all(),
-        "user": current_user,
-        "profile": UserProfile.objects.get(user_id=current_user.id)
-    }
-    return render(request, 'profile/profile.html', context)
+@method_decorator(login_required, name='dispatch')
+class HomeView(ListView):
+    model = Post
+    template_name = 'posts/posts.html'
+    context_object_name = 'posts'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def get_queryset(self):
+        return Post.objects.order_by('-date_posted')
+
+
+class ProfileView(ListView):
+    model = Post
+    template_name = 'profile/profile.html'
+    context_object_name = 'posts'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['profile'] = UserProfile.objects.get(user_id=self.request.user.id)
+        return context
+
+    def get_queryset(self):
+        return Post.objects.order_by('-date_posted')
+
 
 
 def messages(request):
