@@ -15,8 +15,6 @@ def like(request):
     type = request.POST.get('type')
     current_user = request.user
     is_liked = False
-    # post.likes.get(id=current_user.id)
-
     if type == 'like':
         for like in post.likes.all():
             if like == current_user:
@@ -36,11 +34,10 @@ def like(request):
             post.dislikes.add(current_user)
             post.likes.remove(current_user)
 
-    context = {
-        "posts": Post.objects.order_by('-date_posted')
-    }
+
     response = {
-        'is_liked': is_liked
+        'is_liked': is_liked,
+        'likes': post.likes.count() - post.dislikes.count()
     }
     return JsonResponse(response)
 
@@ -102,3 +99,13 @@ def login(request):
             return redirect('/login')
 
     return render(request, 'login/login.html')
+
+def register(request):
+    if request.method == 'POST':
+        user = authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
+        if user:
+            return redirect('/')
+        else:
+            return redirect('/login')
+
+    return render(request, 'register/register.html')

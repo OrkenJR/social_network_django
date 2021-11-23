@@ -14,10 +14,10 @@ class UserProfile(models.Model):
 
 class Post(models.Model):
     body = models.TextField()
-    image = models.ImageField(upload_to='posts')
+    image = models.ImageField(upload_to='posts', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
-    likes = models.ManyToManyField(User, related_name='likes')
-    dislikes = models.ManyToManyField(User, related_name='dislikes')
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
+    dislikes = models.ManyToManyField(User, related_name='dislikes', blank=True)
 
     def get_likes(self):
         return self.likes.count() - self.dislikes.count()

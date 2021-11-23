@@ -56,14 +56,14 @@
              {% csrf_token %}
             <input type="hidden" name="post_id" value="{{ post.id }}">
           <input type="hidden" name="type" value="like">
-          <button type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="like" class="like-icon"></button>
+          <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="like" class="like-icon"></button>
         </form>
         <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
         <form method="post" action="like" class="like_form" id="{{ post.id }}">
              {% csrf_token %}
             <input type="hidden" name="post_id" value="{{ post.id }}">
           <input type="hidden" name="type" value="dislike">
-          <button type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="dislike" class="dislike-icon"></button>
+          <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="dislike" class="dislike-icon"></button>
         </form>
       </div>
 
@@ -94,9 +94,6 @@
                 const url = $(this).attr('action')
                 const likes = parseInt($(`#like-counter${post_id}`).text())
                 const user_id = {{ user.id }}
-
-
-                console.log(user_id)
                 $.ajax({
                     type: 'POST',
                     url: url,
@@ -107,9 +104,9 @@
                     },
                     success: function(response) {
                         if(type === 'dislike' && response.is_liked === false ) {
-                            res = likes - 1
+                            res = parseInt(response.likes )
                         } else if(type === 'like' && response.is_liked === false ){
-                            res = likes + 1
+                            res = parseInt(response.likes )
                         }
 
                         $(`#like-counter${post_id}`).text(res)

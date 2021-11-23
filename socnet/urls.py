@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
+
+from .forms import LoginForm
 from .views import *
 from django.contrib.auth import views as auth_views
 
@@ -29,7 +31,8 @@ urlpatterns = [
     path('groups/', groups, name='groups'),
     # path('login/', login, name='login'),
     path('logout/', logout, name='logout'),
-    path('login/', auth_views.LoginView.as_view(template_name='login/login.html'), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='login/login.html', form_class = LoginForm), name='login'),
+    path('register/', register, name='register'),
     url('like', like, name='like'),
 ]
 

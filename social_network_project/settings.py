@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['192.168.0.168',
 # Application definition
 
 INSTALLED_APPS = [
+    'crispy_forms',
     'socnet.apps.SocnetConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -132,3 +133,5 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 LOGIN_URL = 'login'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
