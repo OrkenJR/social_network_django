@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
 {% block title %}Профиль{% endblock %}
 {% block style %}
 <link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
@@ -14,8 +16,11 @@
 
     <div class="col d-flex flex-column justify-content-between">
 
-      <div class="person-name px-3">
-        {{ user.name }}
+      <div class="p-3">
+        Имя пользователя:
+        <span class="font-weight-bold">
+          {{ user.username }}
+        </span>
       </div>
 
       <div class="p-3">
@@ -46,7 +51,12 @@
         </span>
       </div>
 
+      <a class="btn btn-primary" href="/{{ profile.id }}/edit_profile">Редактировать</a>
+
     </div>
+
+    {# {{ user_form|crispy }}#}
+    {# {{ profile_form|crispy }}#}
 
     <div class="col d-flex flex-column justify-content-between align-items-center">
       <img src="{{ profile.image.url }}" class="person-avatar">
@@ -96,25 +106,27 @@
   {% endif %}
   <!-- POST FOOTER -->
 
-  
+
   <div class="row px-3 pt-3">
 
 
-      <div class="like-wrapper">
-        <form method="post" action="like" class="like_form" id="{{ post.id }}">
-             {% csrf_token %}
-            <input type="hidden" name="post_id" value="{{ post.id }}">
-          <input type="hidden" name="type" value="like">
-          <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="like" class="like-icon"></button>
-        </form>
-        <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
-        <form method="post" action="like" class="like_form" id="{{ post.id }}">
-             {% csrf_token %}
-            <input type="hidden" name="post_id" value="{{ post.id }}">
-          <input type="hidden" name="type" value="dislike">
-          <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="dislike" class="dislike-icon"></button>
-        </form>
-      </div>
+    <div class="like-wrapper">
+      <form method="post" action="like" class="like_form" id="{{ post.id }}">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <input type="hidden" name="type" value="like">
+        <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="like"
+            class="like-icon"></button>
+      </form>
+      <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
+      <form method="post" action="like" class="like_form" id="{{ post.id }}">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <input type="hidden" name="type" value="dislike">
+        <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="dislike"
+            class="dislike-icon"></button>
+      </form>
+    </div>
 
 
 
@@ -132,37 +144,38 @@
 {% endfor %}
 
 <script>
-        $( document ).ready(function() {
-            let display = false
+  $(document).ready(function () {
+    let display = false
 
-            $('.like_form').submit(function(e){
-                e.preventDefault()
-                const post_id = $(this).attr('id')
-                const type = $("input[name='type']",this).val();
-                const url = $(this).attr('action')
-                const likes = parseInt($(`#like-counter${post_id}`).text())
-                const user_id = {{ user.id }}
+    $('.like_form').submit(function (e) {
+      e.preventDefault()
+      const post_id = $(this).attr('id')
+      const type = $("input[name='type']", this).val();
+      const url = $(this).attr('action')
+      const likes = parseInt($(`#like-counter${post_id}`).text())
+      const user_id = {{ user.id }
+    }
                 $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'post_id':post_id,
-                        'type': type
-                    },
-                    success: function(response) {
-                        if(type === 'dislike' && response.is_liked === false ) {
-                            res = parseInt(response.likes )
-                        } else if(type === 'like' && response.is_liked === false ){
-                            res = parseInt(response.likes )
-                        }
+      type: 'POST',
+      url: url,
+      data: {
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+        'post_id': post_id,
+        'type': type
+      },
+      success: function (response) {
+        if (type === 'dislike' && response.is_liked === false) {
+          res = parseInt(response.likes)
+        } else if (type === 'like' && response.is_liked === false) {
+          res = parseInt(response.likes)
+        }
 
-                        $(`#like-counter${post_id}`).text(res)
-                    },
-                    error: function(response) {
-                        console.log('error', response)
-                    }
-                })
+        $(`#like-counter${post_id}`).text(res)
+      },
+      error: function (response) {
+        console.log('error', response)
+      }
+    })
             })
 
         });

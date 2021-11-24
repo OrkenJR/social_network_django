@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block title %}Профиль{% endblock %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'style/profile.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
+{% block content %}
+<section class="container-* person-info-container">
+    <div class="row">
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Profile Info</legend>
+                {{ user_form|crispy }}
+                {{ profile_form.birth_date|as_crispy_field }}
+                {{ profile_form.quote|as_crispy_field }}
+
+
+
+
+                <div class="col d-flex flex-column justify-content-between align-items-center">
+                    <img src="{{ profile.image.url }}" class="person-avatar">
+                </div>
+
+
+                <label class="btn btn-outline-secondary border">
+                    Выбрать фото
+                    {{ profile_form.image}}
+                </label>
+
+
+            </fieldset>
+
+
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update</button>
+            </div>
+
+
+
+        </form>
+
+
+    </div>
+
+
+</section>
+
+
+
+
+{% endblock %}
