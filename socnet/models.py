@@ -18,6 +18,7 @@ class Post(models.Model):
     date_posted = models.DateTimeField(default=timezone.now)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     dislikes = models.ManyToManyField(User, related_name='dislikes', blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
 
     def get_likes(self):
         return self.likes.count() - self.dislikes.count()

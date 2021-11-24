@@ -25,6 +25,9 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
+    path('post/edit/<int:pk>', PostEditView.as_view(), name='post_edit'),
+    path('post/new/', PostCreationView.as_view(), name='post_create'),
+    path('post/delete/<int:pk>', PostDeleteView.as_view(), name='post_delete'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('<pk>/edit_profile/', ProfileEditView.as_view(), name='edit_profile'),
     path('messages/', messages, name='messages'),
@@ -32,7 +35,7 @@ urlpatterns = [
     path('groups/', groups, name='groups'),
     # path('login/', login, name='login'),
     path('logout/', logout, name='logout'),
-    path('login/', auth_views.LoginView.as_view(template_name='login/login.html', form_class = LoginForm), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='login/login.html', form_class=LoginForm), name='login'),
     path('register/', UserRegistrationView.as_view(), name='register'),
     url('like', like, name='like'),
 ]

@@ -1,12 +1,13 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import ListView, UpdateView, CreateView
+from django.views.generic import ListView, UpdateView, CreateView, DeleteView
 from .forms import *
 from .models import Post, UserProfile
 from django.contrib.auth.models import User
@@ -52,11 +53,12 @@ class HomeView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+
         return context
 
     def get_queryset(self):
         return Post.objects.order_by('-date_posted')
-
 
 
 class UserRegistrationView(SuccessMessageMixin, CreateView):
@@ -69,12 +71,9 @@ class UserRegistrationView(SuccessMessageMixin, CreateView):
         user = form.save(commit=False)
         user.save()
         profile = UserProfile(user=user, quote='')
-
         profile.save()
 
         return super().form_valid(form)
-
-
 
 
 class ProfileEditView(UpdateView):
@@ -122,6 +121,30 @@ class ProfileView(ListView):
 
     def get_queryset(self):
         return Post.objects.order_by('-date_posted')
+
+
+class PostCreationView(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = ['body', 'image']
+    template_name = 'posts/create_post.html'
+    success_url = '/'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class PostEditView(UpdateView):
+    model = Post
+    fields = ['body', 'image']
+    template_name = 'posts/edit_post.html'
+    success_url = '/'
+
+
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'posts/posts.html'
+    success_url = '/'
 
 
 def messages(request):
