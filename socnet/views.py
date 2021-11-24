@@ -28,6 +28,8 @@ def like(request):
         if not is_liked:
             post.dislikes.remove(current_user)
             post.likes.add(current_user)
+        else:
+            post.likes.remove(current_user)
 
     else:
         for dislike in post.dislikes.all():
@@ -37,6 +39,8 @@ def like(request):
         if not is_liked:
             post.dislikes.add(current_user)
             post.likes.remove(current_user)
+        else:
+            post.dislikes.remove(current_user)
 
     response = {
         'is_liked': is_liked,

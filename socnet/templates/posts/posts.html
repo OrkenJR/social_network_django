@@ -71,21 +71,51 @@
   <div class="row px-3 pt-3">
 
 
+
     <div class="like-wrapper">
       <form method="post" action="like" class="like_form" id="{{ post.id }}">
         {% csrf_token %}
         <input type="hidden" name="post_id" value="{{ post.id }}">
         <input type="hidden" name="type" value="like">
-        <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="like"
-            class="like-icon"></button>
+          <button class="btn btn-default" type="submit">
+
+          {% if post.likes.all.count == 0 %}
+              <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like" class="like-icon">
+          {% endif %}
+
+          {% for like in post.likes.all %}
+            {% if like.id == user.id %}
+               <img id="like-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}" alt="like" class="like-icon">
+            {% else %}
+               <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like" class="like-icon">
+            {% endif %}
+
+        {% endfor %}
+
+          </button>
+
+
+
       </form>
       <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
       <form method="post" action="like" class="like_form" id="{{ post.id }}">
         {% csrf_token %}
         <input type="hidden" name="post_id" value="{{ post.id }}">
         <input type="hidden" name="type" value="dislike">
-        <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="dislike"
-            class="dislike-icon"></button>
+        <button class="btn btn-default" type="submit">
+        {% if post.dislikes.all.count == 0 %}
+               <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="dislike" class="dislike-icon">
+          {% endif %}
+
+          {% for like in post.dislikes.all %}
+            {% if like.id == user.id %}
+                <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}" alt="dislike" class="dislike-icon">
+            {% else %}
+               <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="dislike" class="dislike-icon">
+            {% endif %}
+
+        {% endfor %}
+        </button>
       </form>
     </div>
 
@@ -125,9 +155,29 @@
                         'type': type
                     },
                     success: function(response) {
-                        if(type === 'dislike' && response.is_liked === false ) {
+                        if(type === 'dislike') {
+
+
+                             if(response.is_liked === false){
+                                $(`#dislike-img${post_id}`).attr('src','static/src/icon/filled_like.png');
+                                $(`#like-img${post_id}`).attr('src','static/src/icon/like.svg');
+                            }
+                            else{
+                                 $(`#dislike-img${post_id}`).attr('src','static/src/icon/like.svg');
+                            }
                             res = parseInt(response.likes )
-                        } else if(type === 'like' && response.is_liked === false ){
+                        }
+
+
+                        else if(type === 'like'){
+
+                            if(response.is_liked === false){
+                                $(`#like-img${post_id}`).attr('src','static/src/icon/filled_like.png');
+                                $(`#dislike-img${post_id}`).attr('src','static/src/icon/like.svg');
+                            }
+                            else{
+                                 $(`#like-img${post_id}`).attr('src','static/src/icon/like.svg');
+                            }
                             res = parseInt(response.likes )
                         }
 
