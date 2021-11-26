@@ -3,7 +3,16 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .models import *
 
 
-
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comments
+        fields = ('body',)
+        widgets = {
+            'body': forms.Textarea(attrs={'rows': 4, 'cols': 15}),
+        }
+        labels = {
+            'body': 'Оставьте комментарий',
+        }
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)

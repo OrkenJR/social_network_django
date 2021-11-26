@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,6 +13,40 @@ from .forms import *
 from .models import Post, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import logout as django_logout
+
+
+def post_comment(request):
+    post = Post.objects.get(id=request.POST.get("post_id"))
+
+    current_user = request.user
+    comments = post.comments.filter(parent__isnull=True)
+
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            parent_obj = None
+            try:
+                parent_id = int(request.POST.get('parent_id'))
+            except:
+                parent_id = None
+            if parent_id:
+                parent_obj = Comments.objects.get(id=parent_id)
+                if parent_obj:
+                    replay_comment = comment_form.save(commit=False)
+                    replay_comment.parent = parent_obj
+                    replay_comment.user = current_user
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.user = current_user
+            new_comment.save()
+            return HttpResponseRedirect(post.get_absolute_url())
+    else:
+        comment_form = CommentForm()
+    return render(request,
+                  'posts/posts.html',
+                  {'post': post,
+                   'comments': comments,
+                   'comment_form': comment_form})
 
 
 def like(request):
@@ -54,11 +89,11 @@ class HomeView(ListView):
     model = Post
     template_name = 'posts/posts.html'
     context_object_name = 'posts'
-
+    comment_form = CommentForm()
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
-
+        context['c_form'] = self.comment_form
         return context
 
     def get_queryset(self):
