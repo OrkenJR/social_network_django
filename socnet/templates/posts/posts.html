@@ -5,228 +5,237 @@
 {% block title %}Home/Posts{% endblock %}
 
 {% block style %}
-<link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'style/posts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/posts.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style/comments.css' %}">
 {% endblock %}
 {% block script %}
-<script src="{% static 'js/posts.js' %}"></script>
+    <script src="{% static 'js/posts.js' %}"></script>
 {% endblock %}
 {% block content %}
 
 
-<a class="btn btn-primary" href="{% url 'post_create' %}">Добавить пост</a>
+    <a class="btn btn-primary" href="{% url 'post_create' %}">Добавить пост</a>
 
 
 
-{% for post in posts %}
-<section class="post container-*">
-    <!-- POST HEADER -->
+    {% for post in posts %}
+        <section class="post container-*">
+            <!-- POST HEADER -->
 
-    <div class="row">
+            <div class="row">
 
-        <a href="#">
-            <div class="col-1 group-logo-container">
-                <img src="{% static 'src/images/logo.jpg' %}" alt="group-logo" class="logo">
-            </div>
-        </a>
-
-
-
-        <div class="col d-flex align-items-center justify-content-between">
-            <a href="#" class="group-title">Reddit</a>
-            <span class="text-muted post-date">{{ post.date_posted|date:"G:i, F d" }}</span>
+                <a href="#">
+                    <div class="col-1 group-logo-container">
+                        <img src="{% static 'src/images/logo.jpg' %}" alt="group-logo" class="logo">
+                    </div>
+                </a>
 
 
-        </div>
-        {% if post.author.id == user.id %}
-        <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}" alt="like"
-                class="like-icon"></a>
+                <div class="col d-flex align-items-center justify-content-between">
+                    <a href="#" class="group-title">Reddit</a>
+                    <span class="text-muted post-date">{{ post.date_posted|date:"G:i, F d" }}</span>
 
 
-        <form method="POST" action="/post/delete/{{ post.id }}">
-            {% csrf_token %}
-            <label for="delete"><img src="{% static 'src/icon/delete_icon.png' %}" alt="like" class="like-icon"></label>
-            <input class="btn" type="submit" value="" id="delete">
-        </form>
-        {% endif %}
-    </div>
-
-    <!-- POST BODY -->
-
-    {% if post.body %}
-    <div class="row mt-3">
-        <div class="col">
-            <p>{{ post.body }}</p>
-        </div>
-    </div>
-    {% endif %}
-
-    {% if post.image %}
-    <div class="row mt-3">
-        <div class="col">
-            <img src="{{ post.image.url }}" alt="image" class="single-image">
-        </div>
-    </div>
-    {% endif %}
-    <!-- POST FOOTER -->
-
-    <div class="row px-3 pt-3">
-
-
-
-        <div class="like-wrapper">
-            <form method="post" action="like" class="like_form" id="{{ post.id }}">
-                {% csrf_token %}
-                <input type="hidden" name="post_id" value="{{ post.id }}">
-                <input type="hidden" name="type" value="like">
-                <button class="btn btn-default" type="submit">
-
-                    {% if post.likes.all.count == 0 %}
-                    <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like" class="like-icon">
-                    {% endif %}
-
-                    {% for like in post.likes.all %}
-                    {% if like.id == user.id %}
-                    <img id="like-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}" alt="like"
-                        class="like-icon">
-                    {% else %}
-                    <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like" class="like-icon">
-                    {% endif %}
-
-                    {% endfor %}
-
-                </button>
-
-
-
-            </form>
-            <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
-            <form method="post" action="like" class="like_form" id="{{ post.id }}">
-                {% csrf_token %}
-                <input type="hidden" name="post_id" value="{{ post.id }}">
-                <input type="hidden" name="type" value="dislike">
-                <button class="btn btn-default" type="submit">
-                    {% if post.dislikes.all.count == 0 %}
-                    <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="dislike"
-                        class="dislike-icon">
-                    {% endif %}
-
-                    {% for like in post.dislikes.all %}
-                    {% if like.id == user.id %}
-                    <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}" alt="dislike"
-                        class="dislike-icon">
-                    {% else %}
-                    <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="dislike"
-                        class="dislike-icon">
-                    {% endif %}
-
-                    {% endfor %}
-                </button>
-            </form>
-        </div>
-
-
-
-
-
-
-
-        <div class="comment-wrapper">
-            <button class="btn btn-default" type="submit" id="comment">
-                <img src="{% static 'src/icon/comment.svg' %}" alt="comment" class="comment">
-            </button>
-            <span class="comment-counter">{{ post.comments.count }}</span>
-        </div>
-    </div>
-
-
-
-    <div id="comment-list" class="container" style="display: none;">
-
-        {% for comment in post.comments|have_parents %}
-        <div class="col-xs-6" id="comment{{ comment.id }}">
-
-
-            <div class="comment-heading">
-                <div class="comment-voting">
-                    <button type="button">
-                        <span aria-hidden="true">&#9650;</span>
-                        <span class="sr-only">Vote up</span>
-                    </button>
-                    <button type="button">
-                        <span aria-hidden="true">&#9660;</span>
-                        <span class="sr-only">Vote down</span>
-                    </button>
                 </div>
-                <div class="comment-info">
-                    <a href="#" class="comment-author">{{ comment.user.username }}</a>
-                    <p class="m-0">
-                        22 points &bull; {{  comment.calculate_days_ago }}
-                    </p>
+                {% if post.author.id == user.id %}
+                    <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}"
+                                                                        alt="like"
+                                                                        class="like-icon"></a>
+
+
+                    <form method="POST" action="/post/delete/{{ post.id }}">
+                        {% csrf_token %}
+                        <label for="delete"><img src="{% static 'src/icon/delete_icon.png' %}" alt="like"
+                                                 class="like-icon"></label>
+                        <input class="btn" type="submit" value="" id="delete">
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- POST BODY -->
+
+            {% if post.body %}
+                <div class="row mt-3">
+                    <div class="col">
+                        <p>{{ post.body }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if post.image %}
+                <div class="row mt-3">
+                    <div class="col">
+                        <img src="{{ post.image.url }}" alt="image" class="single-image">
+                    </div>
+                </div>
+            {% endif %}
+            <!-- POST FOOTER -->
+
+            <div class="row px-3 pt-3">
+
+
+                <div class="like-wrapper">
+                    <form method="post" action="like" class="like_form" id="{{ post.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <input type="hidden" name="type" value="like">
+                        <button class="btn btn-default" type="submit">
+
+                            {% if post.likes.all.count == 0 %}
+                                <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like"
+                                     class="like-icon">
+                            {% endif %}
+
+                            {% for like in post.likes.all %}
+                                {% if like.id == user.id %}
+                                    <img id="like-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
+                                         alt="like"
+                                         class="like-icon">
+                                {% else %}
+                                    <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like"
+                                         class="like-icon">
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </button>
+
+
+                    </form>
+                    <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
+                    <form method="post" action="like" class="like_form" id="{{ post.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <input type="hidden" name="type" value="dislike">
+                        <button class="btn btn-default" type="submit">
+                            {% if post.dislikes.all.count == 0 %}
+                                <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="dislike"
+                                     class="dislike-icon">
+                            {% endif %}
+
+                            {% for like in post.dislikes.all %}
+                                {% if like.id == user.id %}
+                                    <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
+                                         alt="dislike"
+                                         class="dislike-icon">
+                                {% else %}
+                                    <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"
+                                         alt="dislike"
+                                         class="dislike-icon">
+                                {% endif %}
+
+                            {% endfor %}
+                        </button>
+                    </form>
+                </div>
+
+
+                <div class="comment-wrapper">
+                    <button class="btn-comment btn btn-default" type="submit" id="{{ post.id }}">
+                        <img src="{% static 'src/icon/comment.svg' %}" alt="comment" class="comment">
+                    </button>
+                    <span class="comment-counter">{{ post.comments.count }}</span>
                 </div>
             </div>
 
 
-            <div class="comment-body">
-                <p>
-                    {{ comment.body }}
-                </p>
-                <button type="button">Reply</button>
-            </div>
+            <div id="comment-list{{ post.id }}" class="container" style="display: none;">
+
+                {% for comment in post.comments|have_parents %}
+                    <div class="col-xs-6" id="comment{{ comment.id }}">
 
 
-            <div class="replies">
-                {% for replay in comment.replies.all %}
-                <div class="col-xs-6" id="comment{{ replay.id }}">
-                    <div class="comment-heading">
-                        <div class="comment-voting">
-                            <button type="button">
-                                <span aria-hidden="true">&#9650;</span>
-                                <span class="sr-only">Vote up</span>
-                            </button>
-                            <button type="button">
-                                <span aria-hidden="true">&#9660;</span>
-                                <span class="sr-only">Vote down</span>
-                            </button>
+                        <div class="comment-heading">
+                            <div class="comment-voting">
+                                <button type="button">
+                                    <span aria-hidden="true">&#9650;</span>
+                                    <span class="sr-only">Vote up</span>
+                                </button>
+                                <button type="button">
+                                    <span aria-hidden="true">&#9660;</span>
+                                    <span class="sr-only">Vote down</span>
+                                </button>
+                            </div>
+                            <div class="comment-info">
+                                <a href="#" class="comment-author">{{ comment.user.username }}</a>
+                                <p class="m-0">
+                                    22 points &bull; {{ comment.calculate_days_ago }}
+                                </p>
+                            </div>
                         </div>
-                        <div class="comment-info">
-                            <a href="#" class="comment-author">{{ replay.user.username }}</a>
-                            <p class="m-0">
-                                4 points &bull; {{ replay.calculate_days_ago}}
+
+
+                        <div class="comment-body">
+                            <p>
+                                {{ comment.body }}
                             </p>
+                            <button class="reply-button" type="button" id="comment-reply{{ comment.id }}"
+                                    post_id="{{ post.id }}">Reply
+                            </button>
                         </div>
+
+
+                        <div class="replies">
+                            {% for replay in comment.replies.all %}
+                                <div class="col-xs-6" id="comment{{ replay.id }}">
+                                    <div class="comment-heading">
+                                        <div class="comment-voting">
+                                            <button type="button">
+                                                <span aria-hidden="true">&#9650;</span>
+                                                <span class="sr-only">Vote up</span>
+                                            </button>
+                                            <button type="button">
+                                                <span aria-hidden="true">&#9660;</span>
+                                                <span class="sr-only">Vote down</span>
+                                            </button>
+                                        </div>
+                                        <div class="comment-info">
+                                            <a href="#" class="comment-author">{{ replay.user.username }}</a>
+                                            <p class="m-0">
+                                                4 points &bull; {{ replay.calculate_days_ago }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="comment-body">
+                                        <p>
+                                            {{ replay.body }}
+                                        </p>
+                                        <button class="reply-button" type="button" id="reply_id{{ comment.id }}"
+                                                post_id="{{ post.id }}">Reply
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                            {% endfor %}
+                        </div>
+
                     </div>
 
-                    <div class="comment-body">
-                        <p>
-                            {{ replay.body }}
-                        </p>
-                        <button type="button">Reply</button>
+
+                {% endfor %}
+
+
+                <form class="comment_form" method="post" action="post_comment">
+                    {% csrf_token %}
+                    {{ c_form|crispy }}
+                    <input type="hidden" value="{{ post.id }}" name="id">
+                    <div class="d-flex">
+                        <button class="btn btn-primary" type="submit">Отправить</button>
+                        <button post_id="{{ post.id }}" type="button" class="btn btn-danger ml-3 button-cancel"
+                                id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
+                        </button>
                     </div>
-                </div>
 
 
-                    {% endfor %}
+                </form>
+
             </div>
 
-        </div>
 
-   
-{% endfor %}
-
-
-<form method="post" action="post_comment" class="post_comment">
-    {{ c_form|crispy }}
-    <button class="btn btn-primary" type="submit">Отправить</button>
-
-</form>
-
-</div>
-
-
-
-</section>
+        </section>
 
 
 
@@ -234,78 +243,9 @@
 
 
 
-{% endfor %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% endfor %}
 
-<script>
-
-    $( document ).ready(function() {
-        let display = false
-
-        $('.like_form').submit(function(e){
-            e.preventDefault()
-            const post_id = $(this).attr('id')
-            const type = $("input[name='type']",this).val();
-            const url = $(this).attr('action')
-            const likes = parseInt($(`#like-counter${post_id}`).text())
-            const user_id = {{ user.id }}
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: {
-                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                    'post_id':post_id,
-                    'type': type
-                },
-                success: function(response) {
-                    if(type === 'dislike') {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-                         if(response.is_liked === false){
-                            $(`#dislike-img${post_id}`).attr('src','static/src/icon/filled_like.png');
-                            $(`#like-img${post_id}`).attr('src','static/src/icon/like.svg');
-                        }
-                        else{
-                             $(`#dislike-img${post_id}`).attr('src','static/src/icon/like.svg');
-                        }
-                        res = parseInt(response.likes )
-                    }
-
-
-                    else if(type === 'like'){
-
-                        if(response.is_liked === false){
-                            $(`#like-img${post_id}`).attr('src','static/src/icon/filled_like.png');
-                            $(`#dislike-img${post_id}`).attr('src','static/src/icon/like.svg');
-                        }
-                        else{
-                             $(`#like-img${post_id}`).attr('src','static/src/icon/like.svg');
-                        }
-                        res = parseInt(response.likes )
-                    }
-
-                    $(`#like-counter${post_id}`).text(res)
-                },
-                error: function(response) {
-                    console.log('error', response)
-                }
-            })
-        })
-
-    });
-
-
-    $(document).ready(function(){
-$("#comment").click(function(){
-
-
-  if(document.getElementById("comment-list").style.display === 'none'){
-      document.getElementById("comment-list").style.display = 'block';
-  }
-  else {
-      document.getElementById("comment-list").style.display = 'none';
-  }
-});
-});
-</script>
 {% endblock %}

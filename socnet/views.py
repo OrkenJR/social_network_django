@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -16,8 +17,11 @@ from django.contrib.auth import logout as django_logout
 
 
 def post_comment(request):
-    post = Post.objects.get(id=request.POST.get("post_id"))
 
+
+    post = Post.objects.get(id=request.POST.get("id"))
+
+    t = request.POST.get('body')
     current_user = request.user
     comments = post.comments.filter(parent__isnull=True)
 
@@ -39,7 +43,13 @@ def post_comment(request):
             new_comment.post = post
             new_comment.user = current_user
             new_comment.save()
-            return HttpResponseRedirect(post.get_absolute_url())
+
+            data = serializers.serialize('json',  post.comments.all())
+            response = {
+                'comment': data
+            }
+            return HttpResponse(data, content_type="application/json")
+            # return HttpResponseRedirect(post.get_absolute_url())
     else:
         comment_form = CommentForm()
     return render(request,
@@ -90,6 +100,7 @@ class HomeView(ListView):
     template_name = 'posts/posts.html'
     context_object_name = 'posts'
     comment_form = CommentForm()
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user

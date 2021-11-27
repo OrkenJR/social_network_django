@@ -38,6 +38,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login/login.html', form_class=LoginForm), name='login'),
     path('register/', UserRegistrationView.as_view(), name='register'),
     url('like', like, name='like'),
+    url('post_comment', post_comment, name='post_comment'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
