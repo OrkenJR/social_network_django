@@ -122,9 +122,12 @@
                                          alt="dislike"
                                          class="dislike-icon">
                                 {% else %}
-                                    <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"
+                                    {% if user not in post.dislikes.all %}
+                                        <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"
                                          alt="dislike"
                                          class="dislike-icon">
+                                    {% endif %}
+
                                 {% endif %}
 
                             {% endfor %}
