@@ -234,7 +234,6 @@
                             id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
                     </button>
                 </div>
-
             </form>
 
         </section>
@@ -302,15 +301,16 @@
 
 
             $('.comment_form').submit(function (e) {
-
-
+                e.preventDefault();
                 // {#const post_id = $(this).attr('id');#}
+
                 const post_id = $("input[name='id']", this).val();
                 const url = $(this).attr('action');
                 const parent_id = $("input[name='parent_id']", this).val();
-                const body = $('textarea[name="body"]').val();
+                const body = $(e.target[1]).val()
 
-                e.preventDefault();
+
+                console.log(body)
                 // const user_id = {{ user.id }};
                 $.ajax({
                     type: 'POST',
@@ -338,7 +338,7 @@
                         else{
                             $(comment_list).append(comment);
                         }
-                        $("textarea[name='body']").val('');
+                        {#$("textarea[name='body']").val('');#}
                         console.log(response)
 
                     },
@@ -367,11 +367,11 @@
             const post_id = $(this).attr('post_id')
             comment_id = event.target.id.replace(/\D/g, '');
 
-            $("textarea[name='body']").val('Author name, ').focus();
+            $($('#comment-form'+post_id)[0][1]).val('Author name, ').focus();
 
 
 
-            console.log(event)
+
             document.getElementById('cancel-reply' + post_id).style.display = 'block';
 
             $('<input>').attr({
@@ -392,7 +392,7 @@
             comment_id = event.target.id.replace(/\D/g, '');
             document.getElementById('cancel-reply' + post_id).style.display = 'none';
             $("input[name='parent_id']").remove()
-            $("textarea[name='body']").val('');
+            {#$("textarea[name='body']").val('');#}
         });
 
     </script>
