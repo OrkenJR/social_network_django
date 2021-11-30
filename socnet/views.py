@@ -107,6 +107,7 @@ class HomeView(ListView):
     context_object_name = 'posts'
     comment_form = CommentForm()
 
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
