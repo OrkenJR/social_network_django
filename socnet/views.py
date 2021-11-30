@@ -19,9 +19,8 @@ from django.contrib.auth import logout as django_logout
 def post_comment(request):
 
 
-    post = Post.objects.get(id=request.POST.get("id"))
+    post = Post.objects.get(id=request.POST.get("post_id"))
 
-    t = request.POST.get('body')
     current_user = request.user
     comments = post.comments.filter(parent__isnull=True)
 
@@ -33,7 +32,7 @@ def post_comment(request):
                 parent_id = int(request.POST.get('parent_id'))
             except:
                 parent_id = None
-            if parent_id:
+            if parent_id and parent_id!=0:
                 parent_obj = Comments.objects.get(id=parent_id)
                 if parent_obj:
                     replay_comment = comment_form.save(commit=False)
@@ -44,11 +43,18 @@ def post_comment(request):
             new_comment.user = current_user
             new_comment.save()
 
-            data = serializers.serialize('json',  post.comments.all())
+
+
+            # data = serializers.serialize('json',  post.comments.all())
             response = {
-                'comment': data
+                'comment_id': new_comment.id,
+                'post_id': new_comment.post.id,
+                'comment_body': new_comment.body,
+                'author': new_comment.user.username,
+                'parent_id': parent_id,
+                'date':new_comment.calculate_days_ago()
             }
-            return HttpResponse(data, content_type="application/json")
+            return JsonResponse(response)
             # return HttpResponseRedirect(post.get_absolute_url())
     else:
         comment_form = CommentForm()

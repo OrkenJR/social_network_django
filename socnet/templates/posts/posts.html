@@ -176,7 +176,7 @@
                         </div>
 
 
-                        <div class="replies">
+                        <div class="replies" id="replies{{ comment.id }}">
                             {% for replay in comment.replies.all %}
                                 <div class="col-xs-6" id="comment{{ replay.id }}">
                                     <div class="comment-heading">
@@ -218,22 +218,19 @@
                 {% endfor %}
 
 
-                <form class="comment_form" method="post" action="post_comment">
-                    {% csrf_token %}
-                    {{ c_form|crispy }}
-                    <input type="hidden" value="{{ post.id }}" name="id">
-                    <div class="d-flex">
-                        <button class="btn btn-primary" type="submit">Отправить</button>
-                        <button post_id="{{ post.id }}" type="button" class="btn btn-danger ml-3 button-cancel"
-                                id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
-                        </button>
-                    </div>
-
-
-                </form>
-
             </div>
+            <form class="comment_form" method="post" action="post_comment" id="comment-form{{ post.id }}" style="display: none;">
+                {% csrf_token %}
+                {{ c_form|crispy }}
+                <input type="hidden" value="{{ post.id }}" name="id">
+                <div class="d-flex">
+                    <button class="btn btn-primary" type="submit">Отправить</button>
+                    <button post_id="{{ post.id }}" type="button" class="btn btn-danger ml-3 button-cancel"
+                            id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
+                    </button>
+                </div>
 
+            </form>
 
         </section>
 
@@ -247,5 +244,150 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <script>
+
+
+        $(document).ready(function () {
+            let display = false
+
+            $('.like_form').submit(function (e) {
+                e.preventDefault()
+                const post_id = $(this).attr('id')
+                const type = $("input[name='type']", this).val();
+                const url = $(this).attr('action')
+                const likes = parseInt($(`#like-counter${post_id}`).text())
+                // const user_id = {{ user.id }}
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id': post_id,
+                        'type': type
+                    },
+                    success: function (response) {
+                        if (type === 'dislike') {
+
+
+                            if (response.is_liked === false) {
+                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
+                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            } else {
+                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            }
+                            res = parseInt(response.likes)
+                        } else if (type === 'like') {
+
+                            if (response.is_liked === false) {
+                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
+                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            } else {
+                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            }
+                            res = parseInt(response.likes)
+                        }
+
+                        $(`#like-counter${post_id}`).text(res)
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
+            })
+
+
+            $('.comment_form').submit(function (e) {
+
+
+                // {#const post_id = $(this).attr('id');#}
+                const post_id = $("input[name='id']", this).val();
+                const url = $(this).attr('action');
+                const parent_id = $("input[name='parent_id']", this).val();
+                const body = $('textarea[name="body"]').val();
+
+                e.preventDefault();
+                // const user_id = {{ user.id }};
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id': post_id,
+                        'parent_id': parent_id,
+                        'body': body
+                    },
+                    success: function (response) {
+
+                        var replies = '<div class="replies" id="replies'+response.comment_id+'"></div>';
+                        var comment_body = '<div class="comment-body"> <p>' + response.comment_body + '</p> <button class="reply-button" type="button" id="comment-reply' + response.comment_id + ' "post_id="' + response.post_id + '">Reply </button> </div>'
+                        var comment_heading = '<div class="comment-heading"> <div class="comment-voting"> <button type="button"> <span aria-hidden="true">&#9650;</span> <span class="sr-only">Vote up</span> </button> <button type="button"> <span aria-hidden="true">&#9660;</span> <span class="sr-only">Vote down</span> </button> </div> <div class="comment-info"> <a href="#" class="comment-author">' + response.author + '</a> <p class="m-0">22 points &bull; ' + response.date + ' </p> </div> </div>'
+                        var comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies+'</div>'
+                        comment_list = "#comment-list" + response.post_id
+
+
+
+                        if(response.parent_id !== null){
+                            replies = "#replies"+response.parent_id
+                            $(replies).append(comment);
+                        }
+                        else{
+                            $(comment_list).append(comment);
+                        }
+                        console.log(response)
+
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
+            })
+
+        });
+        $(document).on('click', '.btn-comment', function (event) {
+            const comment = "comment-list" + event.currentTarget.id
+            const post_id = $(this).attr('id')
+            if (document.getElementById(comment).style.display === 'none') {
+                document.getElementById(comment).style.display = 'block';
+                document.getElementById('comment-form'+post_id).style.display='block';
+
+            } else {
+                document.getElementById(comment).style.display = 'none';
+                document.getElementById('comment-form'+post_id).style.display='none';
+            }
+        });
+
+        $(document).on('click', '.reply-button', function (event) {
+
+            const post_id = $(this).attr('post_id')
+            comment_id = event.target.id.replace(/\D/g, '');
+
+            $("textarea[name='body']").val('Author name, ').focus();
+
+
+
+            console.log(event)
+            document.getElementById('cancel-reply' + post_id).style.display = 'block';
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'parent_id',
+                value: comment_id
+            }).appendTo('.comment_form');
+            console.log(post_id)
+            // {#$(`#form-id${post_id}`)#}
+
+
+        });
+
+
+        $(document).on('click', '.button-cancel', function (event) {
+
+            const post_id = $(this).attr('post_id')
+            comment_id = event.target.id.replace(/\D/g, '');
+            document.getElementById('cancel-reply' + post_id).style.display = 'none';
+            $("input[name='parent_id']").remove()
+        });
+
+    </script>
 
 {% endblock %}
