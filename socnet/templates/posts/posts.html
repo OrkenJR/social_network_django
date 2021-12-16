@@ -167,7 +167,7 @@
                                 {{ comment.body }}
                             </p>
                             <button class="reply-button" type="button" id="comment-reply{{ comment.id }}"
-                                    post_id="{{ post.id }}">Reply
+                                    post_id="{{ post.id }}" userName="{{ comment.user.username }}">Reply
                             </button>
                         </div>
 
@@ -189,7 +189,7 @@
                                             {{ replay.body }}
                                         </p>
                                         <button class="reply-button" type="button" id="reply_id{{ comment.id }}"
-                                                post_id="{{ post.id }}">Reply
+                                                post_id="{{ post.id }}" userName="{{ comment.user.username }}">Reply
                                         </button>
                                     </div>
                                 </div>
@@ -249,7 +249,6 @@
                     success: function (response) {
                         if (type === 'dislike') {
 
-
                             if (response.is_liked === false) {
                                 $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
                                 $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
@@ -271,7 +270,7 @@
                         $(`#like-counter${post_id}`).text(res)
                     },
                     error: function (response) {
-                        console.log('error', response)
+                        console.error('error', response)
                     }
                 })
             })
@@ -279,15 +278,12 @@
 
             $('.comment_form').submit(function (e) {
                 e.preventDefault();
-                // {#const post_id = $(this).attr('id');#}
 
                 const post_id = $("input[name='id']", this).val();
                 const url = $(this).attr('action');
                 const parent_id = $("input[name='parent_id']", this).val();
-                const body = $(e.target[1]).val()
+                const body = $(e.target[1]).val();
 
-
-                // const user_id = {{ user.id }};
                 $.ajax({
                     type: 'POST',
                     url: url,
@@ -305,19 +301,18 @@
                         var comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies + '</div>'
                         comment_list = "#comment-list" + response.post_id
 
-
                         if (response.parent_id !== null) {
                             replies = "#replies" + response.parent_id
                             $(replies).append(comment);
                         } else {
                             $(comment_list).append(comment);
                         }
-                        {#$("textarea[name='body']").val('');#}
-                        console.log(response)
+
+                        $(e.target[1]).val('').focus();
 
                     },
                     error: function (response) {
-                        console.log('error', response)
+                        console.error('error', response)
                     }
                 })
             })
@@ -338,11 +333,12 @@
 
         $(document).on('click', '.reply-button', function (event) {
 
-            const post_id = $(this).attr('post_id')
+            const post_id = $(this).attr('post_id');
             comment_id = event.target.id.replace(/\D/g, '');
 
-            $($('#comment-form' + post_id)[0][1]).val('Author name, ').focus();
+            let userName = $(this).attr('userName');
 
+            $($('#comment-form' + post_id)[0][1]).val(userName + ', ').focus();
 
             document.getElementById('cancel-reply' + post_id).style.display = 'block';
 
@@ -351,8 +347,6 @@
                 name: 'parent_id',
                 value: comment_id
             }).appendTo('.comment_form');
-            console.log(post_id)
-            // {#$(`#form-id${post_id}`)#}
 
 
         });
@@ -360,11 +354,12 @@
 
         $(document).on('click', '.button-cancel', function (event) {
 
-            const post_id = $(this).attr('post_id')
+            const post_id = $(this).attr('post_id');
             comment_id = event.target.id.replace(/\D/g, '');
             document.getElementById('cancel-reply' + post_id).style.display = 'none';
-            $("input[name='parent_id']").remove()
-            {#$("textarea[name='body']").val('');#}
+            $("input[name='parent_id']").remove();
+
+            $(event.target.form[1]).val('').focus();
         });
 
     </script>
