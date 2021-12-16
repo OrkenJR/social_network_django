@@ -10,6 +10,10 @@
 {% block script %}
 <script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}
+
+{% block friend_requests_count %}
+    {{ friend_requests.count }}
+{% endblock %}
 {% block content %}
 <section class="container-* person-info-container">
   <div class="row">
@@ -47,11 +51,37 @@
       <div class="ui-link-wrapper">
         Друзья:
         <span class="ui-link font-weight-bold">
-          0
+          {{ friends.count }}
         </span>
       </div>
 
-      <a class="btn btn-primary" href="/{{ profile.id }}/edit_profile">Редактировать</a>
+        {% if is_me %}
+            <a class="btn btn-primary" href="/{{ profile.id }}/edit_profile">Редактировать</a>
+        {% elif is_friend %}
+             <a class="btn btn-primary" href="#">Удалить из друзей</a>
+        {% else %}
+            {% if friend_request == "from" %}
+                <a class="btn btn-primary" href="#">Принять</a>
+                <a class="btn btn-danger" href="#">Отклонить</a>
+            {% elif friend_request == "to" %}
+
+                <form method="post" action="cancel_friend_request" class="cancel_request" id="{{ user.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
+                </form>
+
+            {% else %}
+
+
+                <form method="post" action="send_friend_request" class="send_request" id="{{ user.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение дружбы</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
 
     </div>
 
@@ -59,9 +89,12 @@
     {# {{ profile_form|crispy }}#}
 
     <div class="col d-flex flex-column justify-content-between align-items-center">
-      <img src="{{ profile.image.url }}" class="person-avatar">
+      <img src="{{ profile.image.url }}" class="person-avatar" alt="">
 
-      <button class="btn btn-outline-secondary border" type="button">Изменить аватар</button>
+         {% if is_me %}
+             <button class="btn btn-outline-secondary border" type="button">Изменить аватар</button>
+        {% endif %}
+
     </div>
 
   </div>
@@ -142,42 +175,206 @@
 
 </section>
 {% endfor %}
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(document).ready(function () {
-    let display = false
+$(document).ready(function () {
+            let display = false
 
-    $('.like_form').submit(function (e) {
-      e.preventDefault()
-      const post_id = $(this).attr('id')
-      const type = $("input[name='type']", this).val();
-      const url = $(this).attr('action')
-      const likes = parseInt($(`#like-counter${post_id}`).text())
-      const user_id = {{ user.id }
-    }
+            $('.like_form').submit(function (e) {
+                e.preventDefault()
+                const post_id = $(this).attr('id')
+                const type = $("input[name='type']", this).val();
+                const url = $(this).attr('action')
+                const likes = parseInt($(`#like-counter${post_id}`).text())
+                // const user_id = {{ user.id }}
                 $.ajax({
-      type: 'POST',
-      url: url,
-      data: {
-        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-        'post_id': post_id,
-        'type': type
-      },
-      success: function (response) {
-        if (type === 'dislike' && response.is_liked === false) {
-          res = parseInt(response.likes)
-        } else if (type === 'like' && response.is_liked === false) {
-          res = parseInt(response.likes)
-        }
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id': post_id,
+                        'type': type
+                    },
+                    success: function (response) {
+                        if (type === 'dislike') {
 
-        $(`#like-counter${post_id}`).text(res)
-      },
-      error: function (response) {
-        console.log('error', response)
-      }
-    })
+
+                            if (response.is_liked === false) {
+                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
+                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            } else {
+                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            }
+                            res = parseInt(response.likes)
+                        } else if (type === 'like') {
+
+                            if (response.is_liked === false) {
+                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
+                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            } else {
+                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                            }
+                            res = parseInt(response.likes)
+                        }
+
+                        $(`#like-counter${post_id}`).text(res)
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
             })
 
+            $('.send_request').submit(function (e){
+                e.preventDefault();
+                // {#const post_id = $(this).attr('id');#}
+                const url = $(this).attr('action');
+                const receiver_id = $(this).attr('id')
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'receiver_id': receiver_id,
+                    },
+                    success: function (response) {
+                        if(response['response'] === "success"){
+                            $(this).attr("action", "cancel_friend_request")
+                            document.getElementById("send_request_button").firstChild.data = "Отменить"
+                        }
+                        else{
+
+                        }
+                        console.log(response)
+
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
+            })
+        $('.cancel_request').submit(function (e){
+                e.preventDefault();
+                // {#const post_id = $(this).attr('id');#}
+                const url = $(this).attr('action');
+                const receiver_id = $(this).attr('id')
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'receiver_id': receiver_id,
+                    },
+                    success: function (response) {
+                        if(response['response'] === "success"){
+                            $(this).attr("action", "send_friend_request")
+                            document.getElementById("cancel_request_button").firstChild.data = "Отправить предложение дружбы"
+                        }
+                        else{
+
+                        }
+                        console.log(response)
+
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
+            })
+
+            $('.comment_form').submit(function (e) {
+                e.preventDefault();
+                // {#const post_id = $(this).attr('id');#}
+
+                const post_id = $("input[name='id']", this).val();
+                const url = $(this).attr('action');
+                const parent_id = $("input[name='parent_id']", this).val();
+                const body = $(e.target[1]).val()
+
+
+                console.log(body)
+                // const user_id = {{ user.id }};
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id': post_id,
+                        'parent_id': parent_id,
+                        'body': body
+                    },
+                    success: function (response) {
+
+                        var replies = '<div class="replies" id="replies'+response.comment_id+'"></div>';
+                        var comment_body = '<div class="comment-body"> <p>' + response.comment_body + '</p> <button class="reply-button" type="button" id="comment-reply' + response.comment_id + ' "post_id="' + response.post_id + '">Reply </button> </div>'
+                        var comment_heading = '<div class="comment-heading"> <div class="comment-voting"> <button type="button"> <span aria-hidden="true">&#9650;</span> <span class="sr-only">Vote up</span> </button> <button type="button"> <span aria-hidden="true">&#9660;</span> <span class="sr-only">Vote down</span> </button> </div> <div class="comment-info"> <a href="#" class="comment-author">' + response.author + '</a> <p class="m-0">22 points &bull; ' + response.date + ' </p> </div> </div>'
+                        var comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies+'</div>'
+                        comment_list = "#comment-list" + response.post_id
+
+
+
+                        if(response.parent_id !== null){
+                            replies = "#replies"+response.parent_id
+                            $(replies).append(comment);
+                        }
+                        else{
+                            $(comment_list).append(comment);
+                        }
+                        {#$("textarea[name='body']").val('');#}
+                        console.log(response)
+
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
+            })
+
+        });
+        $(document).on('click', '.btn-comment', function (event) {
+            const comment = "comment-list" + event.currentTarget.id
+            const post_id = $(this).attr('id')
+            if (document.getElementById(comment).style.display === 'none') {
+                document.getElementById(comment).style.display = 'block';
+                document.getElementById('comment-form'+post_id).style.display='block';
+
+            } else {
+                document.getElementById(comment).style.display = 'none';
+                document.getElementById('comment-form'+post_id).style.display='none';
+            }
+        });
+
+        $(document).on('click', '.reply-button', function (event) {
+
+            const post_id = $(this).attr('post_id')
+            comment_id = event.target.id.replace(/\D/g, '');
+
+            $($('#comment-form'+post_id)[0][1]).val('Author name, ').focus();
+
+
+
+
+            document.getElementById('cancel-reply' + post_id).style.display = 'block';
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'parent_id',
+                value: comment_id
+            }).appendTo('.comment_form');
+            console.log(post_id)
+            // {#$(`#form-id${post_id}`)#}
+
+
+        });
+
+
+        $(document).on('click', '.button-cancel', function (event) {
+
+            const post_id = $(this).attr('post_id')
+            comment_id = event.target.id.replace(/\D/g, '');
+            document.getElementById('cancel-reply' + post_id).style.display = 'none';
+            $("input[name='parent_id']").remove()
+            {#$("textarea[name='body']").val('');#}
         });
 </script>
 {% endblock %}

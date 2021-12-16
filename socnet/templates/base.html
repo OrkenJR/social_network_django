@@ -54,7 +54,7 @@
         <a class="nav-link" href="{% url 'messages' %}">Сообщения</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'friends' %}">Друзья</a>
+        <a class="nav-link" href="{% url 'friends' %}">Друзья {% block friend_requests_count %}{% endblock %}</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'groups' %}">Группы</a>

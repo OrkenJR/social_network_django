@@ -6,6 +6,55 @@ from django.utils import timezone
 from django.contrib.humanize.templatetags import humanize
 
 
+class FriendList(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
+    friends = models.ManyToManyField(User, blank=True, related_name="friends")
+
+    def add_friend(self, user):
+        if not user in self.friends.all():
+            self.friends.add(user)
+            self.save()
+
+    def remove_friend(self, user):
+
+        if user in self.friends.all():
+            self.friends.remove(user)
+
+    def unfriend(self, delete_user):
+        friend_list = self
+        friend_list.remove_friend(delete_user)
+
+        deleting_friend_list = FriendList.objects.get(user=delete_user)
+
+        deleting_friend_list.remove_friend(self.user)
+
+
+class FriendRequest(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    is_active = models.BooleanField(blank=True, null=False, default=True)
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def accept(self):
+        receiver_friend_list = FriendList.objects.get(user=self.receiver)
+        if receiver_friend_list:
+            receiver_friend_list.add_friend(self.sender)
+            sender_friend_list = FriendList.objects.get(usr=self.sender)
+            if sender_friend_list:
+                sender_friend_list.add_friend(self.receiver)
+                self.is_active = False
+                self.save()
+
+    def decline(self):
+        self.is_active = False
+        self.save()
+
+    def cancel(self):
+        self.is_active = False
+        self.save()
+
+
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='user_avatar', default='user_avatar/person.png')

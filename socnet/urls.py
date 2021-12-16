@@ -29,6 +29,7 @@ urlpatterns = [
     path('post/new/', PostCreationView.as_view(), name='post_create'),
     path('post/delete/<int:pk>', PostDeleteView.as_view(), name='post_delete'),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/<int:pk>', ProfileViewOther.as_view(), name='profile_view_others'),
     path('<pk>/edit_profile/', ProfileEditView.as_view(), name='edit_profile'),
     path('messages/', messages, name='messages'),
     path('friends/', friends, name='friends'),
@@ -39,6 +40,8 @@ urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='register'),
     url('like', like, name='like'),
     url('post_comment', post_comment, name='post_comment'),
+    url('send_friend_request', send_friend_request, name='send_friend_request'),
+    url('cancel_friend_request', cancel_friend_request, name='cancel_friend_request'),
 ]
-
+# r'^profile/(?P<username>\w+)/$
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

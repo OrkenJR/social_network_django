@@ -7,18 +7,79 @@ from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.views.generic import ListView, UpdateView, CreateView, DeleteView
+from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
 from .forms import *
 from .models import Post, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import logout as django_logout
 
+from .utils import get_friend_request_or_false
+
+
+def cancel_friend_request(request):
+    user = request.user
+    response = {}
+    if request.method == "POST":
+        receiver_id = request.POST.get("receiver_id")
+        if receiver_id:
+            receiver = User.objects.get(pk=receiver_id)
+            try:
+                friend_requests = FriendRequest.objects.filter(sender=user, receiver=receiver)
+                try:
+                    for friend_request in friend_requests:
+                        if friend_request.is_active:
+                            friend_request.delete()
+                            response['response'] = "success"
+                            break
+                        else: response['response'] = "error"
+                except Exception as e:
+                    response['response'] = str(e)
+            except FriendRequest.DoesNotExist:
+                response['response'] = "error"
+
+            if response['response'] == None:
+                response['response'] = 'error'
+    else:
+        response['response'] = 'error'
+    return JsonResponse(response)
+
+def send_friend_request(request):
+    user = request.user
+    response = {}
+    if request.method == 'POST':
+        receiver_id = request.POST.get("receiver_id")
+        if receiver_id:
+            receiver = User.objects.get(pk=receiver_id)
+            try:
+                friend_requests = FriendRequest.objects.filter(sender=user, receiver=receiver)
+                try:
+                    for friend_request in friend_requests:
+                        if friend_request.is_active:
+                            raise Exception("Вы уже оставили заявку на дружбу")
+                    friend_request = FriendRequest(sender=user, receiver=receiver)
+                    friend_request.save()
+                    response['response'] = "success"
+                except Exception as e:
+                    response['response'] = str(e)
+            except FriendRequest.DoesNotExist:
+                friend_request = FriendRequest(sender=user, receiver=receiver)
+                friend_request.save()
+                response['response'] = "success"
+
+            if response['response'] == None:
+                response['response'] = 'error'
+
+
+
+        else:
+            response['response'] = 'error'
+
+    return JsonResponse(response)
+
 
 def post_comment(request):
-
-
     post = Post.objects.get(id=request.POST.get("post_id"))
 
     current_user = request.user
@@ -32,7 +93,7 @@ def post_comment(request):
                 parent_id = int(request.POST.get('parent_id'))
             except:
                 parent_id = None
-            if parent_id and parent_id!=0:
+            if parent_id and parent_id != 0:
                 parent_obj = Comments.objects.get(id=parent_id)
                 if parent_obj:
                     replay_comment = comment_form.save(commit=False)
@@ -43,19 +104,15 @@ def post_comment(request):
             new_comment.user = current_user
             new_comment.save()
 
-
-
-            # data = serializers.serialize('json',  post.comments.all())
             response = {
                 'comment_id': new_comment.id,
                 'post_id': new_comment.post.id,
                 'comment_body': new_comment.body,
                 'author': new_comment.user.username,
                 'parent_id': parent_id,
-                'date':new_comment.calculate_days_ago()
+                'date': new_comment.calculate_days_ago()
             }
             return JsonResponse(response)
-            # return HttpResponseRedirect(post.get_absolute_url())
     else:
         comment_form = CommentForm()
     return render(request,
@@ -106,7 +163,6 @@ class HomeView(ListView):
     template_name = 'posts/posts.html'
     context_object_name = 'posts'
     comment_form = CommentForm()
-
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -173,11 +229,70 @@ class ProfileView(ListView):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         context['profile'] = UserProfile.objects.get(user_id=self.request.user.id)
+        try:
+            friend_list = FriendList.objects.get(user=self.request.user)
+        except FriendList.DoesNotExist:
+            friend_list = FriendList(user=self.request.user)
+            friend_list.save()
+        my_friends = friend_list.friends.all()
+        context['friends'] = my_friends
 
         return context
 
     def get_queryset(self):
         return Post.objects.order_by('-date_posted')
+
+
+class ProfileViewOther(DetailView):
+    model = User
+    template_name = 'profile/profile.html'
+
+    def get_user_profile(self, username):
+        return get_object_or_404(User, pk=self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileViewOther, self).get_context_data(**kwargs)
+        context['user'] = User.objects.get(pk=self.kwargs.get('pk'))
+        context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk')))
+
+        try:
+            friend_list = FriendList.objects.get(user=self.request.user)
+        except FriendList.DoesNotExist:
+            friend_list = FriendList(user=self.request.user)
+            friend_list.save()
+        my_friends = friend_list.friends.all()
+        context['friends'] = my_friends
+
+        is_my_account = True
+        is_friend_account = False
+        user = self.request.user
+        friend_request = "0"
+        friend_requests = None
+        if user.id != self.kwargs.get("pk"):
+            is_my_account = False
+            if my_friends.filter(pk=self.kwargs.get('pk')):
+                is_friend_account = True
+            else:
+                is_friend_account = False
+
+                if get_friend_request_or_false(sender=context.get("user"), receiver=user):
+                    friend_request = "from"
+                    context["friend_request"] = get_friend_request_or_false(sender=context.get("user"),
+                                                                            receiver=user).id
+
+                elif get_friend_request_or_false(sender=user, receiver=context.get("user")):
+                    friend_request = "to"
+        else:
+            try:
+                friend_requests = FriendRequest.objects.filter(receiver=context.get("user"), is_active=True)
+            except Exception as e:
+                raise e
+
+        context["is_me"] = is_my_account
+        context["is_friend"] = is_friend_account
+        context["friend_request"] = friend_request
+        context["friend_requests"] = friend_requests
+        return context
 
 
 class PostCreationView(LoginRequiredMixin, CreateView):
