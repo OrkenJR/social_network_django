@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
+{% load crispy_forms_filters %}
 {% load static %}
 {% load tags %}
 {% load crispy_forms_tags %}
 {% block title %}Home/Posts{% endblock %}
 
 {% block style %}
+    <!--suppress ALL -->
     <link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style/posts.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style/comments.css' %}">
@@ -14,10 +16,7 @@
 {% endblock %}
 {% block content %}
 
-
     <a class="btn btn-primary" href="{% url 'post_create' %}">Добавить пост</a>
-
-
 
     {% for post in posts %}
         <section class="post container-*">
@@ -93,8 +92,10 @@
                                          alt="like"
                                          class="like-icon">
                                 {% else %}
-                                    {% if user not in post.likes.all %}<img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like"
-                                         class="like-icon">{% endif %}
+                                    {% if user not in post.likes.all %}
+                                        <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"
+                                             alt="like"
+                                             class="like-icon">{% endif %}
 
 
                                 {% endif %}
@@ -124,8 +125,8 @@
                                 {% else %}
                                     {% if user not in post.dislikes.all %}
                                         <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"
-                                         alt="dislike"
-                                         class="dislike-icon">
+                                             alt="dislike"
+                                             class="dislike-icon">
                                     {% endif %}
 
                                 {% endif %}
@@ -152,20 +153,10 @@
 
 
                         <div class="comment-heading">
-                            <div class="comment-voting">
-                                <button type="button">
-                                    <span aria-hidden="true">&#9650;</span>
-                                    <span class="sr-only">Vote up</span>
-                                </button>
-                                <button type="button">
-                                    <span aria-hidden="true">&#9660;</span>
-                                    <span class="sr-only">Vote down</span>
-                                </button>
-                            </div>
                             <div class="comment-info">
                                 <a href="#" class="comment-author">{{ comment.user.username }}</a>
                                 <p class="m-0">
-                                    22 points &bull; {{ comment.calculate_days_ago }}
+                                    {{ comment.calculate_days_ago }}
                                 </p>
                             </div>
                         </div>
@@ -185,20 +176,10 @@
                             {% for replay in comment.replies.all %}
                                 <div class="col-xs-6" id="comment{{ replay.id }}">
                                     <div class="comment-heading">
-                                        <div class="comment-voting">
-                                            <button type="button">
-                                                <span aria-hidden="true">&#9650;</span>
-                                                <span class="sr-only">Vote up</span>
-                                            </button>
-                                            <button type="button">
-                                                <span aria-hidden="true">&#9660;</span>
-                                                <span class="sr-only">Vote down</span>
-                                            </button>
-                                        </div>
                                         <div class="comment-info">
                                             <a href="#" class="comment-author">{{ replay.user.username }}</a>
                                             <p class="m-0">
-                                                4 points &bull; {{ replay.calculate_days_ago }}
+                                                {{ replay.calculate_days_ago }}
                                             </p>
                                         </div>
                                     </div>
@@ -224,7 +205,8 @@
 
 
             </div>
-            <form class="comment_form" method="post" action="post_comment" id="comment-form{{ post.id }}" style="display: none;">
+            <form class="comment_form" method="post" action="post_comment" id="comment-form{{ post.id }}"
+                  style="display: none;">
                 {% csrf_token %}
                 {{ c_form|crispy }}
                 <input type="hidden" value="{{ post.id }}" name="id">
@@ -237,11 +219,6 @@
             </form>
 
         </section>
-
-
-
-
-
 
 
     {% endfor %}
@@ -310,7 +287,6 @@
                 const body = $(e.target[1]).val()
 
 
-                console.log(body)
                 // const user_id = {{ user.id }};
                 $.ajax({
                     type: 'POST',
@@ -323,19 +299,17 @@
                     },
                     success: function (response) {
 
-                        var replies = '<div class="replies" id="replies'+response.comment_id+'"></div>';
+                        var replies = '<div class="replies" id="replies' + response.comment_id + '"></div>';
                         var comment_body = '<div class="comment-body"> <p>' + response.comment_body + '</p> <button class="reply-button" type="button" id="comment-reply' + response.comment_id + ' "post_id="' + response.post_id + '">Reply </button> </div>'
-                        var comment_heading = '<div class="comment-heading"> <div class="comment-voting"> <button type="button"> <span aria-hidden="true">&#9650;</span> <span class="sr-only">Vote up</span> </button> <button type="button"> <span aria-hidden="true">&#9660;</span> <span class="sr-only">Vote down</span> </button> </div> <div class="comment-info"> <a href="#" class="comment-author">' + response.author + '</a> <p class="m-0">22 points &bull; ' + response.date + ' </p> </div> </div>'
-                        var comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies+'</div>'
+                        var comment_heading = '<div class="comment-heading"> <div class="comment-info"> <a href="#" class="comment-author">' + response.author + '</a> <p class="m-0"> ' + response.date + ' </p> </div> </div>'
+                        var comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies + '</div>'
                         comment_list = "#comment-list" + response.post_id
 
 
-
-                        if(response.parent_id !== null){
-                            replies = "#replies"+response.parent_id
+                        if (response.parent_id !== null) {
+                            replies = "#replies" + response.parent_id
                             $(replies).append(comment);
-                        }
-                        else{
+                        } else {
                             $(comment_list).append(comment);
                         }
                         {#$("textarea[name='body']").val('');#}
@@ -354,11 +328,11 @@
             const post_id = $(this).attr('id')
             if (document.getElementById(comment).style.display === 'none') {
                 document.getElementById(comment).style.display = 'block';
-                document.getElementById('comment-form'+post_id).style.display='block';
+                document.getElementById('comment-form' + post_id).style.display = 'block';
 
             } else {
                 document.getElementById(comment).style.display = 'none';
-                document.getElementById('comment-form'+post_id).style.display='none';
+                document.getElementById('comment-form' + post_id).style.display = 'none';
             }
         });
 
@@ -367,9 +341,7 @@
             const post_id = $(this).attr('post_id')
             comment_id = event.target.id.replace(/\D/g, '');
 
-            $($('#comment-form'+post_id)[0][1]).val('Author name, ').focus();
-
-
+            $($('#comment-form' + post_id)[0][1]).val('Author name, ').focus();
 
 
             document.getElementById('cancel-reply' + post_id).style.display = 'block';

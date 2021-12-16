@@ -57,12 +57,13 @@ button:active {
     margin-left: 10px;
 }
 .comment-author {
-    color: rgba(0, 0, 0, 0.85);
+    color: #2a5885;
     font-weight: bold;
     text-decoration: none;
 }
 .comment-author:hover {
     text-decoration: underline;
+    color: #2a5885;
 }
 .replies {
     margin-left: 20px;
@@ -86,8 +87,7 @@ button:active {
     background-color: rgba(0, 0, 0, 0.3);
 }
 .comment-body {
-    padding: 0 20px;
-    padding-left: 28px;
+    padding: 0 20px 0 28px;
 }
 .replies {
     margin-left: 28px;
