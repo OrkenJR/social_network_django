@@ -14,8 +14,66 @@ from .forms import *
 from .models import Post, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import logout as django_logout
+import json
 
 from .utils import get_friend_request_or_false
+
+
+class FriendListView(ListView):
+    model = UserProfile
+    template_name = 'friends-list/friends-list.html'
+    context_object_name = 'friends'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+
+        context['query_set'] = serializers.serialize('json',
+                                                     FriendList.objects.get(user=self.request.user).friends.all())
+        context['profile_query_set'] = serializers.serialize('json', UserProfile.objects.filter(
+            user__in=FriendList.objects.get(user=self.request.user).friends.all()).all())
+        return context
+
+    def get_queryset(self):
+        return UserProfile.objects.filter(user__in=FriendList.objects.get(user=self.request.user).friends.all()).all()
+
+
+def delete_friend(request):
+    user = request.user
+    response = {}
+    if request.method == "POST":
+        user_id = request.POST.get("receiver_id")
+        if user_id:
+            try:
+                friend = User.objects.get(pk=user_id)
+                friend_list = FriendList.objects.get(user=user)
+                friend_list.unfriend(friend)
+                response['response'] = "success"
+            except Exception as e:
+                response['response'] = "error"
+        else:
+            response['response'] = "error"
+
+    return JsonResponse(response)
+
+
+def accept_friend_request(request):
+    user = request.user
+    response = {}
+    if request.method == "POST":
+        request_id = request.POST.get("request_id")
+        if request_id:
+            friend_request = FriendRequest.objects.get(pk=request_id)
+            if friend_request:
+                if friend_request.receiver == user:
+                    friend_request.accept()
+                    response['response'] = "success"
+                else:
+                    response['response'] = 'error'
+        else:
+            response['response'] = 'error'
+
+    return JsonResponse(response)
 
 
 def cancel_friend_request(request):
@@ -33,17 +91,19 @@ def cancel_friend_request(request):
                             friend_request.delete()
                             response['response'] = "success"
                             break
-                        else: response['response'] = "error"
+                        else:
+                            response['response'] = "error"
                 except Exception as e:
                     response['response'] = str(e)
             except FriendRequest.DoesNotExist:
                 response['response'] = "error"
 
-            if response['response'] == None:
+            if response['response'] is None:
                 response['response'] = 'error'
     else:
         response['response'] = 'error'
     return JsonResponse(response)
+
 
 def send_friend_request(request):
     user = request.user
@@ -112,6 +172,7 @@ def post_comment(request):
                 'parent_id': parent_id,
                 'date': new_comment.calculate_days_ago()
             }
+
             return JsonResponse(response)
     else:
         comment_form = CommentForm()
@@ -220,27 +281,28 @@ class ProfileEditView(UpdateView):
         return context
 
 
-class ProfileView(ListView):
-    model = Post
-    template_name = 'profile/profile.html'
-    context_object_name = 'posts'
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        context['profile'] = UserProfile.objects.get(user_id=self.request.user.id)
-        try:
-            friend_list = FriendList.objects.get(user=self.request.user)
-        except FriendList.DoesNotExist:
-            friend_list = FriendList(user=self.request.user)
-            friend_list.save()
-        my_friends = friend_list.friends.all()
-        context['friends'] = my_friends
-
-        return context
-
-    def get_queryset(self):
-        return Post.objects.order_by('-date_posted')
+def ProfileView(request):
+    return redirect('/profile/' + str(request.user.id))
+    # model = Post
+    # template_name = 'profile/profile.html'
+    # context_object_name = 'posts'
+    #
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['user'] = self.request.user
+    #     context['profile'] = UserProfile.objects.get(user_id=self.request.user.id)
+    #     try:
+    #         friend_list = FriendList.objects.get(user=self.request.user)
+    #     except FriendList.DoesNotExist:
+    #         friend_list = FriendList(user=self.request.user)
+    #         friend_list.save()
+    #     my_friends = friend_list.friends.all()
+    #     context['friends'] = my_friends
+    #
+    #     return context
+    #
+    # def get_queryset(self):
+    #     return Post.objects.order_by('-date_posted')
 
 
 class ProfileViewOther(DetailView):
@@ -252,7 +314,10 @@ class ProfileViewOther(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfileViewOther, self).get_context_data(**kwargs)
-        context['user'] = User.objects.get(pk=self.kwargs.get('pk'))
+        context['user'] = self.request.user
+        context['this_user'] = User.objects.get(pk=self.kwargs.get('pk'))
+        context['profile'] = UserProfile.objects.get(user=context['this_user'])
+        context['my_profile'] = UserProfile.objects.get(user=self.request.user)
         context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk')))
 
         try:
@@ -260,8 +325,16 @@ class ProfileViewOther(DetailView):
         except FriendList.DoesNotExist:
             friend_list = FriendList(user=self.request.user)
             friend_list.save()
+
         my_friends = friend_list.friends.all()
-        context['friends'] = my_friends
+        context['my_friends'] = my_friends
+
+        try:
+            friend_list = FriendList.objects.get(user=context['this_user'])
+        except FriendList.DoesNotExist:
+            friend_list = FriendList(user=context['this_user'])
+            friend_list.save()
+        context['friends'] = friend_list.friends.all()
 
         is_my_account = True
         is_friend_account = False
@@ -275,23 +348,26 @@ class ProfileViewOther(DetailView):
             else:
                 is_friend_account = False
 
-                if get_friend_request_or_false(sender=context.get("user"), receiver=user):
+                if get_friend_request_or_false(sender=context.get("this_user"), receiver=user):
                     friend_request = "from"
-                    context["friend_request"] = get_friend_request_or_false(sender=context.get("user"),
+                    context["friend_request"] = get_friend_request_or_false(sender=context.get("this_user"),
                                                                             receiver=user).id
 
-                elif get_friend_request_or_false(sender=user, receiver=context.get("user")):
+                elif get_friend_request_or_false(sender=user, receiver=context.get("this_user")):
                     friend_request = "to"
+                    context["friend_request"] = get_friend_request_or_false(sender=user,
+                                                                            receiver=context.get("this_user")).id
         else:
             try:
-                friend_requests = FriendRequest.objects.filter(receiver=context.get("user"), is_active=True)
+                friend_requests = FriendRequest.objects.filter(receiver=context.get("this_user"), is_active=True)
             except Exception as e:
                 raise e
 
         context["is_me"] = is_my_account
         context["is_friend"] = is_friend_account
-        context["friend_request"] = friend_request
+        context["friend_request_enum"] = friend_request
         context["friend_requests"] = friend_requests
+
         return context
 
 
@@ -303,6 +379,18 @@ class PostCreationView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        form.instance.group_author = Group.objects.get(admin=self.request.user)
+        return super().form_valid(form)
+
+
+class PostCreationGroup(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = ['body', 'image']
+    template_name = 'posts/create_post.html'
+    success_url = '/'
+
+    def form_valid(self, form):
+        form.instance.group_author = Group.objects.get(admin=self.request.user)
         return super().form_valid(form)
 
 
@@ -323,12 +411,36 @@ def messages(request):
     return render(request, 'messages-list/messages-list.html')
 
 
-def friends(request):
-    return render(request, 'friends-list/friends-list.html')
+class GroupView(DetailView):
+    model = Group
+    template_name = 'group/group.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupView, self).get_context_data(**kwargs)
+        context['user'] = self.request.user
+        try:
+            context['posts'] = Post.objects.filter(group_author=Group.objects.get(pk=self.kwargs.get('pk'))).all()
+        except Post.DoesNotExist:
+            context['posts'] = 'null'
+        return context
 
 
-def groups(request):
-    return render(request, 'groups-list/groups-list.html')
+class GroupList(ListView):
+    model = Group
+    template_name = 'groups-list/groups-list.html'
+    context_object_name = 'groups'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
+
+    def get_queryset(self):
+        # Group.objects.filter(followers__in=self.request.user).all()
+        return Group.objects.filter(
+            followers__username__contains=self.request.user.username).all() | Group.objects.filter(
+            admin=self.request.user).all()
+        # return Group.objects.filter(admin=self.request.user).all()
 
 
 @login_required

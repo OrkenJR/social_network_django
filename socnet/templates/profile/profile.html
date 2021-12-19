@@ -11,9 +11,13 @@
 <script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}
 
-{% block friend_requests_count %}
-    {{ friend_requests.count }}
-{% endblock %}
+
+
+{#{% block friend_requests_count %}#}
+{#    {{ friend_requests.count }}#}
+{#{% endblock %}#}
+
+
 {% block content %}
 <section class="container-* person-info-container">
   <div class="row">
@@ -23,7 +27,7 @@
       <div class="p-3">
         Имя пользователя:
         <span class="font-weight-bold">
-          {{ user.username }}
+          {{ this_user.username }}
         </span>
       </div>
 
@@ -56,27 +60,36 @@
       </div>
 
         {% if is_me %}
-            <a class="btn btn-primary" href="/{{ profile.id }}/edit_profile">Редактировать</a>
+            <a class="btn btn-primary" href="{% url 'edit_profile' my_profile.id %}">Редактировать</a>
         {% elif is_friend %}
-             <a class="btn btn-primary" href="#">Удалить из друзей</a>
-        {% else %}
-            {% if friend_request == "from" %}
-                <a class="btn btn-primary" href="#">Принять</a>
-                <a class="btn btn-danger" href="#">Отклонить</a>
-            {% elif friend_request == "to" %}
-
-                <form method="post" action="cancel_friend_request" class="cancel_request" id="{{ user.id }}">
+            <form method="post" action="delete_friend" class="delete_friend" id="{{ this_user.id }}">
                 {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                <input type="hidden" name="request_id" value="{{ friend_request }}">
+                <button id="delete_friend_button" class="btn btn-primary" type="submit">Удалить из друзей</button>
+                </form>
+        {% else %}
+            {% if friend_request_enum == "from" %}
+                <form method="post" action="accept_friend_request" class="accept_request" id="{{ this_user.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                    <input type="hidden" name="request_id" value="{{ friend_request }}">
+                    <button id="accept_friend_button" class="btn btn-primary" type="submit">Принять</button>
+                </form>
+            {% elif friend_request_enum == "to" %}
+
+                <form method="post" action="cancel_friend_request" class="cancel_request" id="{{ this_user.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ this_user.id }}">
                     <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
                 </form>
 
             {% else %}
 
 
-                <form method="post" action="send_friend_request" class="send_request" id="{{ user.id }}">
+                <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}">
                 {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="user_id" value="{{ this_user.id }}">
                     <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение дружбы</button>
                 </form>
             {% endif %}
@@ -186,7 +199,7 @@ $(document).ready(function () {
                 const type = $("input[name='type']", this).val();
                 const url = $(this).attr('action')
                 const likes = parseInt($(`#like-counter${post_id}`).text())
-                // const user_id = {{ user.id }}
+                // const user_id = {{ this_user.id }}
                 $.ajax({
                     type: 'POST',
                     url: url,
@@ -225,6 +238,69 @@ $(document).ready(function () {
                 })
             })
 
+            $('.delete_friend').submit(function (e){
+                e.preventDefault();
+                const url = $(this).attr('action');
+                const receiver_id = $(this).attr('id')
+                const request_id = $("input[name='request_id']", this).val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'receiver_id': receiver_id,
+                        'request_id':request_id
+                    },
+                    success: function (response) {
+                        if(response['response'] === "success"){
+                            $('.delete_friend').attr("action", "send_friend_request").removeClass('delete_friend').addClass('send_request')
+                            $('#delete_friend_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "send_request_button").text("Отправить предложение дружбы")
+
+
+                        }
+                        else{
+
+                        }
+                        console.log(response)
+
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
+            })
+            $('.accept_request').submit(function (e){
+                e.preventDefault();
+                const url = $(this).attr('action');
+                const receiver_id = $(this).attr('id')
+                const request_id = $("input[name='request_id']", this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'receiver_id': receiver_id,
+                        'request_id':request_id
+                    },
+                    success: function (response) {
+                        if(response['response'] === "success"){
+                            $('.accept_request').attr("action", "delete_friend").removeClass('accept_request').addClass('delete_friend')
+                            $('#accept_friend_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "delete_friend_button").text("Удалить")
+
+
+                        }
+                        else{
+
+                        }
+                        console.log(response)
+
+                    },
+                    error: function (response) {
+                        console.log('error', response)
+                    }
+                })
+            })
             $('.send_request').submit(function (e){
                 e.preventDefault();
                 // {#const post_id = $(this).attr('id');#}
@@ -239,8 +315,11 @@ $(document).ready(function () {
                     },
                     success: function (response) {
                         if(response['response'] === "success"){
-                            $(this).attr("action", "cancel_friend_request")
-                            document.getElementById("send_request_button").firstChild.data = "Отменить"
+                            $('.send_request').attr("action", "cancel_friend_request").removeClass('send_request').addClass('cancel_request')
+                            $('#send_request_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "cancel_request_button").text("Отменить")
+
+
+
                         }
                         else{
 
@@ -267,8 +346,11 @@ $(document).ready(function () {
                     },
                     success: function (response) {
                         if(response['response'] === "success"){
-                            $(this).attr("action", "send_friend_request")
-                            document.getElementById("cancel_request_button").firstChild.data = "Отправить предложение дружбы"
+
+                            console.log("Iamhere")
+                            $('.cancel_request').attr("action", "send_friend_request").removeClass('cancel_request').addClass('send_request')
+                            $('#cancel_request_button').removeClass('btn-danger').addClass('btn-primary').text("Отправить предложение дружбы")
+
                         }
                         else{
 

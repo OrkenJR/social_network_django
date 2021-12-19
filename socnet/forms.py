@@ -14,6 +14,7 @@ class CommentForm(forms.ModelForm):
             'body': 'Оставьте комментарий',
         }
 
+
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
 

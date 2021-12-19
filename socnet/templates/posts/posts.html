@@ -26,18 +26,16 @@
 
                 <a href="#">
                     <div class="col-1 group-logo-container">
-                        <img src="{% static 'src/images/logo.jpg' %}" alt="group-logo" class="logo">
+                        <img src="{{ post|get_image_post }}" alt="group-logo" class="logo">
                     </div>
                 </a>
 
 
                 <div class="col d-flex align-items-center justify-content-between">
-                    <a href="#" class="group-title">Reddit</a>
+                    <a href="{{ post|get_post_author_url }}" class="group-title">{{ post|get_post_author }}</a>
                     <span class="text-muted post-date">{{ post.date_posted|date:"G:i, F d" }}</span>
-
-
                 </div>
-                {% if post.author.id == user.id %}
+                {% if post.author.id == user.id or post.group_author.admin.id == user.id%}
                     <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}"
                                                                         alt="like"
                                                                         class="like-icon"></a>
@@ -81,7 +79,7 @@
                         <input type="hidden" name="type" value="like">
                         <button class="btn btn-default" type="submit">
 
-                            {% if post.likes.all.count == 0 %}
+                            {% if post.likes.all.count == 0 or user not in post.likes.all%}
                                 <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like"
                                      class="like-icon">
                             {% endif %}
@@ -91,15 +89,14 @@
                                     <img id="like-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
                                          alt="like"
                                          class="like-icon">
-                                {% else %}
-                                    {% if user not in post.likes.all %}
-                                        <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"
-                                             alt="like"
-                                             class="like-icon">{% endif %}
+{#                                {% else %}#}
+{#                                    {% if user not in post.likes.all%}#}
+{#                                        <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"#}
+{#                                             alt="like"#}
+{#                                             class="like-icon">{% endif %}#}
 
 
                                 {% endif %}
-
                             {% endfor %}
 
                         </button>
@@ -112,7 +109,7 @@
                         <input type="hidden" name="post_id" value="{{ post.id }}">
                         <input type="hidden" name="type" value="dislike">
                         <button class="btn btn-default" type="submit">
-                            {% if post.dislikes.all.count == 0 %}
+                            {% if post.dislikes.all.count == 0 or user not in post.dislikes.all %}
                                 <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="dislike"
                                      class="dislike-icon">
                             {% endif %}
@@ -122,12 +119,12 @@
                                     <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
                                          alt="dislike"
                                          class="dislike-icon">
-                                {% else %}
-                                    {% if user not in post.dislikes.all %}
-                                        <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"
-                                             alt="dislike"
-                                             class="dislike-icon">
-                                    {% endif %}
+{#                                {% else %}#}
+{#                                    {% if user not in post.dislikes.all %}#}
+{#                                        <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"#}
+{#                                             alt="dislike"#}
+{#                                             class="dislike-icon">#}
+{#                                    {% endif %}#}
 
                                 {% endif %}
 

@@ -1,5 +1,7 @@
 from django import template
 
+from socnet.models import FriendRequest, UserProfile, Group
+
 register = template.Library()
 
 
@@ -7,26 +9,42 @@ register = template.Library()
 def have_parents(things):
     return things.filter(parent__isnull=True)
 
+@register.filter
+def get_image_post(post):
+    if post.author is None:
+        return post.group_author.image.url
+    else:
+        return UserProfile.objects.get(user=post.author).image.url
 
-@register.filter('break')
-def break_(loop):
-    '''Breaks from a loop.
+# @register.filter
+# def get_post_author_url_group(post):
+#     if post.author is None:
+#         return "/groups/"+str(post.group_author.id)
+#     else:
+#         return "/profile/"+str(post.author.id)
 
-    The 'break' filter is used within a loop and takes as input a loop variable,
-    e.g. 'forloop' in case of a for loop. For example, to display the items
-    from list ``items`` up to the first item that is equal to ``end``::
+@register.filter
+def get_post_author_url(post):
+    if post.author is None:
+        return "groups/"+str(post.group_author.id)
+    else:
+        return "profile/"+str(post.author.id)
 
-        <ul>
-        {% for item in items %}
-            {% if item == 'end' %}
-                {{ forloop|break }}
-            {% endif %}
-            <li>{{ item }}</li>
-        {% endfor %}
-        </ul>
+@register.filter
+def get_post_author(post):
+    if post.author is None:
+        return post.group_author.name
+    else:
+        return post.author.username
 
-    Breaking from nested loops is also supported by passing the appropriate loop
-    variable, e.g. ``forloop.parentloop|break``.
-    '''
-    raise StopLoopException(loop, False)
+
+
+@register.filter
+def friend_requests(user):
+    try:
+        return FriendRequest.objects.filter(receiver=user, is_active=True).count()
+    except FriendRequest.DoesNotExist:
+        return 0
+
+
 

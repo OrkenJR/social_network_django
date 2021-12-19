@@ -6,6 +6,13 @@ from django.utils import timezone
 from django.contrib.humanize.templatetags import humanize
 
 
+class Group(models.Model):
+    admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name="admin")
+    image = models.ImageField(upload_to='group_img', default='group/vk-logo.png')
+    name = models.CharField(max_length=150)
+    followers = models.ManyToManyField(User, blank=True, related_name="followers")
+
+
 class FriendList(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
     friends = models.ManyToManyField(User, blank=True, related_name="friends")
@@ -16,16 +23,13 @@ class FriendList(models.Model):
             self.save()
 
     def remove_friend(self, user):
-
         if user in self.friends.all():
             self.friends.remove(user)
 
     def unfriend(self, delete_user):
         friend_list = self
         friend_list.remove_friend(delete_user)
-
         deleting_friend_list = FriendList.objects.get(user=delete_user)
-
         deleting_friend_list.remove_friend(self.user)
 
 
@@ -40,7 +44,13 @@ class FriendRequest(models.Model):
         receiver_friend_list = FriendList.objects.get(user=self.receiver)
         if receiver_friend_list:
             receiver_friend_list.add_friend(self.sender)
-            sender_friend_list = FriendList.objects.get(usr=self.sender)
+
+            try:
+                sender_friend_list = FriendList.objects.get(user=self.sender)
+            except FriendList.DoesNotExist:
+                sender_friend_list = FriendList(user=self.sender)
+                sender_friend_list.save()
+
             if sender_friend_list:
                 sender_friend_list.add_friend(self.receiver)
                 self.is_active = False
@@ -68,7 +78,8 @@ class Post(models.Model):
     date_posted = models.DateTimeField(default=timezone.now)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     dislikes = models.ManyToManyField(User, related_name='dislikes', blank=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True, blank=True)
+    group_author = models.ForeignKey(Group, on_delete=models.CASCADE, default=None, null=True, blank=True)
 
     def get_likes(self):
         return self.likes.count() - self.dislikes.count()

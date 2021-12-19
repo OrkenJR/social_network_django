@@ -12,3 +12,10 @@ def get_friend_request_or_false(sender, receiver):
 
 def get_context_data(**kwargs):
     context = kwargs
+
+
+def get_friend_requests(request):
+    try:
+        return FriendRequest.objects.filter(receiver=request.user, is_active=True)
+    except FriendRequest.DoesNotExist:
+        raise 0
