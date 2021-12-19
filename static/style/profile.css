@@ -1,4 +1,4 @@
-.row {
+.person-info-container .row {
   background-color: #FFFFFF;
   padding: 1rem;
   border-radius: 10px;
@@ -9,7 +9,7 @@
   height: 200px;
 }
 
-.btn {
+.person-info-container .btn {
   margin-top: 1rem;
   width: 75%;
 }
@@ -19,7 +19,7 @@
   font-size: 24px;
 }
 
-.ui-link-wrapper {
+.person-info-container .ui-link-wrapper {
   cursor: pointer;
   padding: 1rem;
   border-radius: 5px;
@@ -27,11 +27,11 @@
   transition: background-color 0.35s;
 }
 
-.ui-link-wrapper:hover {
+.person-info-container .ui-link-wrapper:hover {
   background-color: rgb(227, 228, 230);
 }
 
-.ui-link {
+.person-info-container .ui-link {
   color: #2a5885;
 }
 

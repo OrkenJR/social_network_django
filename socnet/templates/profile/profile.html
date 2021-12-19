@@ -1,489 +1,327 @@
 {% extends 'base.html' %}
+{% load tags %}
 {% load static %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% block title %}Профиль{% endblock %}
 {% block style %}
-<link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'style/profile.css' %}">
+    <!--suppress HtmlUnknownTarget, HtmlUnknownAttribute -->
+    <link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/profile.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/posts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/comments.css' %}">
 {% endblock %}
 {% block script %}
-<script src="{% static 'js/profile.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+    <script src="{% static 'js/posts.js' %}"></script>
 {% endblock %}
-
-
-
-{#{% block friend_requests_count %}#}
-{#    {{ friend_requests.count }}#}
-{#{% endblock %}#}
 
 
 {% block content %}
-<section class="container-* person-info-container">
-  <div class="row">
+    <section class="container-* person-info-container">
+        <div class="row">
 
-    <div class="col d-flex flex-column justify-content-between">
+            <div class="col d-flex flex-column justify-content-between">
 
-      <div class="p-3">
-        Имя пользователя:
-        <span class="font-weight-bold">
+                <div class="p-3">
+                    Имя пользователя:
+                    <span class="font-weight-bold">
           {{ this_user.username }}
         </span>
-      </div>
+                </div>
 
-      <div class="p-3">
-        Цитата:
-        <span class="font-weight-bold">
+                <div class="p-3">
+                    Цитата:
+                    <span class="font-weight-bold">
           {{ profile.quote }}
         </span>
-      </div>
+                </div>
 
-      <div class="p-3">
-        День рождения:
-        <span class="font-weight-bold">
+                <div class="p-3">
+                    День рождения:
+                    <span class="font-weight-bold">
           {{ profile.birth_date|date:"F d Y" }}
         </span>
-      </div>
+                </div>
 
-      <div class="ui-link-wrapper">
-        Группы:
-        <span class="ui-link font-weight-bold">
+                <div class="ui-link-wrapper">
+                    Группы:
+                    <span class="ui-link font-weight-bold">
           0
         </span>
-      </div>
+                </div>
 
-      <div class="ui-link-wrapper">
-        Друзья:
-        <span class="ui-link font-weight-bold">
+                <div class="ui-link-wrapper">
+                    Друзья:
+                    <span class="ui-link font-weight-bold">
           {{ friends.count }}
         </span>
-      </div>
+                </div>
 
-        {% if is_me %}
-            <a class="btn btn-primary" href="{% url 'edit_profile' my_profile.id %}">Редактировать</a>
-        {% elif is_friend %}
-            <form method="post" action="delete_friend" class="delete_friend" id="{{ this_user.id }}">
-                {% csrf_token %}
-            <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                <input type="hidden" name="request_id" value="{{ friend_request }}">
-                <button id="delete_friend_button" class="btn btn-primary" type="submit">Удалить из друзей</button>
-                </form>
-        {% else %}
-            {% if friend_request_enum == "from" %}
-                {#                Это срабатвывает когда ты принимаешь запрос#}
+                {% if is_me %}
+                    <a class="btn btn-primary" href="{% url 'edit_profile' my_profile.id %}">Редактировать</a>
+                {% elif is_friend %}
+                    <form method="post" action="delete_friend" class="delete_friend" id="{{ this_user.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                        <input type="hidden" name="request_id" value="{{ friend_request }}">
+                        <button id="delete_friend_button" class="btn btn-primary" type="submit">Удалить из друзей
+                        </button>
+                    </form>
+                {% else %}
+                    {% if friend_request_enum == "from" %}
+                        {#                Это срабатвывает когда ты принимаешь запрос#}
 
-                <form method="post" action="accept_friend_request" class="accept_request" id="{{ this_user.id }}">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                    <input type="hidden" name="request_id" value="{{ friend_request }}">
-                    <button id="accept_friend_button" class="btn btn-primary" type="submit">Принять</button>
-                </form>
-            {% elif friend_request_enum == "to" %}
-{#                Это срабатвывает когда ты отменяешь запрос#}
+                        <form method="post" action="accept_friend_request" class="accept_request"
+                              id="{{ this_user.id }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                            <input type="hidden" name="request_id" value="{{ friend_request }}">
+                            <button id="accept_friend_button" class="btn btn-primary" type="submit">Принять</button>
+                        </form>
+                    {% elif friend_request_enum == "to" %}
+                        {#                Это срабатвывает когда ты отменяешь запрос#}
 
-                <form method="post" action="cancel_friend_request" class="cancel_request" id="{{ this_user.id }}">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                    <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
-                </form>
-
-
-                <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}" style="display: none">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                    <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение дружбы</button>
-                </form>
-
-            {% else %}
-                {#                Это срабатвывает когда ты отправляешь кому-то запрос#}
-                <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                    <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение дружбы</button>
-                </form>
+                        <form method="post" action="cancel_friend_request" class="cancel_request"
+                              id="{{ this_user.id }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                            <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
+                        </form>
 
 
-                 <form method="post" action="cancel_friend_request" class="cancel_request" id="{{ this_user.id }}" style="display: none">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                    <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
-                </form>
+                        <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}"
+                              style="display: none">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                            <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение
+                                дружбы
+                            </button>
+                        </form>
+
+                    {% else %}
+                        {#                Это срабатвывает когда ты отправляешь кому-то запрос#}
+                        <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                            <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение
+                                дружбы
+                            </button>
+                        </form>
+
+
+                        <form method="post" action="cancel_friend_request" class="cancel_request"
+                              id="{{ this_user.id }}" style="display: none">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                            <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+
+
+            </div>
+
+            <div class="col d-flex flex-column justify-content-between align-items-center">
+                <img src="{{ profile.image.url }}" class="person-avatar" alt="">
+
+                {% if is_me %}
+                    <button class="btn btn-outline-secondary border" type="button">Изменить аватар</button>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </section>
+
+
+    {% for post in posts %}
+        <section class="post container-*">
+            <!-- POST HEADER -->
+
+            <div class="row">
+
+                <a href="#">
+                    <div class="col-1 group-logo-container">
+                        <img src="{{ post|get_image_post }}" alt="group-logo" class="logo">
+                    </div>
+                </a>
+
+
+                <div class="col d-flex align-items-center justify-content-between">
+                    <a href="{{ post|get_post_author_url }}" class="group-title">{{ post|get_post_author }}</a>
+                    <span class="text-muted post-date">{{ post.date_posted|date:"G:i, F d" }}</span>
+                </div>
+                {% if post.author.id == user.id or post.group_author.admin.id == user.id %}
+                    <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}"
+                                                                        alt="like"
+                                                                        class="like-icon"></a>
+
+
+                    <form method="POST" action="/post/delete/{{ post.id }}">
+                        {% csrf_token %}
+                        <label for="delete"><img src="{% static 'src/icon/delete_icon.png' %}" alt="like"
+                                                 class="like-icon"></label>
+                        <input class="btn" type="submit" value="" id="delete">
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- POST BODY -->
+
+            {% if post.body %}
+                <div class="row mt-3">
+                    <div class="col">
+                        <p>{{ post.body }}</p>
+                    </div>
+                </div>
             {% endif %}
-        {% endif %}
 
+            {% if post.image %}
+                <div class="row mt-3">
+                    <div class="col">
+                        <img src="{{ post.image.url }}" alt="image" class="single-image">
+                    </div>
+                </div>
+            {% endif %}
+            <!-- POST FOOTER -->
+
+            <div class="row px-3 pt-3">
+
+
+                <div class="like-wrapper">
+                    <form method="post" action="like" class="like_form" id="{{ post.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <input type="hidden" name="type" value="like">
+                        <button class="btn btn-default" type="submit">
+
+                            {% if post.likes.all.count == 0 or user not in post.likes.all %}
+                                <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like"
+                                     class="like-icon">
+                            {% endif %}
+
+                            {% for like in post.likes.all %}
+                                {% if like.id == user.id %}
+                                    <img id="like-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
+                                         alt="like"
+                                         class="like-icon">
+                                {% endif %}
+                            {% endfor %}
+
+                        </button>
+
+
+                    </form>
+                    <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
+                    <form method="post" action="like" class="like_form" id="{{ post.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <input type="hidden" name="type" value="dislike">
+                        <button class="btn btn-default" type="submit">
+                            {% if post.dislikes.all.count == 0 or user not in post.dislikes.all %}
+                                <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="dislike"
+                                     class="dislike-icon">
+                            {% endif %}
+
+                            {% for like in post.dislikes.all %}
+                                {% if like.id == user.id %}
+                                    <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
+                                         alt="dislike"
+                                         class="dislike-icon">
+                                {% endif %}
+
+                            {% endfor %}
+                        </button>
+                    </form>
+                </div>
+
+
+                <div class="comment-wrapper">
+                    <button class="btn-comment btn btn-default" type="submit" id="{{ post.id }}">
+                        <img src="{% static 'src/icon/comment.svg' %}" alt="comment" class="comment">
+                    </button>
+                    <span class="comment-counter">{{ post.comments.count }}</span>
+                </div>
+            </div>
+
+
+            <div id="comment-list{{ post.id }}" class="container" style="display: none;">
+
+                {% for comment in post.comments|have_parents %}
+                    <div class="col-xs-6" id="comment{{ comment.id }}">
+
+
+                        <div class="comment-heading">
+                            <div class="comment-info">
+                                <a href="#" class="comment-author">{{ comment.user.username }}</a>
+                                <p class="m-0">
+                                    {{ comment.calculate_days_ago }}
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="comment-body">
+                            <p>
+                                {{ comment.body }}
+                            </p>
+                            <button class="reply-button" type="button" id="comment-reply{{ comment.id }}"
+                                    post_id="{{ post.id }}" userName="{{ comment.user.username }}">Reply
+                            </button>
+                        </div>
+
+
+                        <div class="replies" id="replies{{ comment.id }}">
+                            {% for replay in comment.replies.all %}
+                                <div class="col-xs-6" id="comment{{ replay.id }}">
+                                    <div class="comment-heading">
+                                        <div class="comment-info">
+                                            <a href="#" class="comment-author">{{ replay.user.username }}</a>
+                                            <p class="m-0">
+                                                {{ replay.calculate_days_ago }}
+                                            </p>
+                                        </div>
+                                    </div>
 
-    </div>
+                                    <div class="comment-body">
+                                        <p>
+                                            {{ replay.body }}
+                                        </p>
+                                        <button class="reply-button" type="button" id="reply_id{{ comment.id }}"
+                                                post_id="{{ post.id }}" userName="{{ comment.user.username }}">Reply
+                                        </button>
+                                    </div>
+                                </div>
 
-    {# {{ user_form|crispy }}#}
-    {# {{ profile_form|crispy }}#}
 
-    <div class="col d-flex flex-column justify-content-between align-items-center">
-      <img src="{{ profile.image.url }}" class="person-avatar" alt="">
+                            {% endfor %}
+                        </div>
 
-         {% if is_me %}
-             <button class="btn btn-outline-secondary border" type="button">Изменить аватар</button>
-        {% endif %}
+                    </div>
 
-    </div>
 
-  </div>
-</section>
+                {% endfor %}
 
 
-{% for post in posts %}
-<section class="post container-*">
-  <!-- POST HEADER -->
+            </div>
+            <form class="comment_form" method="post" action="post_comment" id="comment-form{{ post.id }}"
+                  style="display: none;">
+                {% csrf_token %}
+                {{ c_form|crispy }}
+                <input type="hidden" value="{{ post.id }}" name="id">
+                <div class="d-flex">
+                    <button class="btn btn-primary" type="submit">Отправить</button>
+                    <button post_id="{{ post.id }}" type="button" class="btn btn-danger ml-3 button-cancel"
+                            id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
+                    </button>
+                </div>
+            </form>
 
-  <div class="row">
-
-    <a href="#">
-      <div class="col-1 group-logo-container">
-        <img src="{% static 'src/images/logo.jpg' %}" alt="group-logo" class="logo">
-      </div>
-    </a>
-
-    <div class="col d-flex align-items-center justify-content-between">
-      <a href="#" class="group-title">Reddit</a>
-      <span class="text-muted post-date">{{ post.date_posted|date:"G:i, F d" }}</span>
-    </div>
-
-  </div>
-
-  <!-- POST BODY -->
-
-  {% if post.body %}
-  <div class="row mt-3">
-    <div class="col">
-      <p>{{ post.body }}</p>
-    </div>
-  </div>
-  {% endif %}
-
-  {% if post.image %}
-  <div class="row mt-3">
-    <div class="col">
-      <img src="{{ post.image.url }}" alt="image" class="single-image">
-    </div>
-  </div>
-  {% endif %}
-  <!-- POST FOOTER -->
-
-
-  <div class="row px-3 pt-3">
-
-
-    <div class="like-wrapper">
-      <form method="post" action="like" class="like_form" id="{{ post.id }}">
-        {% csrf_token %}
-        <input type="hidden" name="post_id" value="{{ post.id }}">
-        <input type="hidden" name="type" value="like">
-        <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="like"
-            class="like-icon"></button>
-      </form>
-      <span class="like-counter" id="like-counter{{ post.id }}">{{ post.get_likes }}</span>
-      <form method="post" action="like" class="like_form" id="{{ post.id }}">
-        {% csrf_token %}
-        <input type="hidden" name="post_id" value="{{ post.id }}">
-        <input type="hidden" name="type" value="dislike">
-        <button class="btn btn-default" type="submit"><img src="{% static 'src/icon/like.svg' %}" alt="dislike"
-            class="dislike-icon"></button>
-      </form>
-    </div>
-
-
-
-
-
-
-
-    <div class="comment-wrapper">
-      <img src="{% static 'src/icon/comment.svg' %}" alt="comment" class="comment">
-      <span class="comment-counter">2</span>
-    </div>
-  </div>
-
-</section>
-{% endfor %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function () {
-            let display = false
-
-            $('.like_form').submit(function (e) {
-                e.preventDefault()
-                const post_id = $(this).attr('id')
-                const type = $("input[name='type']", this).val();
-                const url = $(this).attr('action')
-                const likes = parseInt($(`#like-counter${post_id}`).text())
-                // const user_id = {{ this_user.id }}
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'post_id': post_id,
-                        'type': type
-                    },
-                    success: function (response) {
-                        if (type === 'dislike') {
-
-
-                            if (response.is_liked === false) {
-                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
-                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            } else {
-                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            }
-                            res = parseInt(response.likes)
-                        } else if (type === 'like') {
-
-                            if (response.is_liked === false) {
-                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
-                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            } else {
-                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            }
-                            res = parseInt(response.likes)
-                        }
-
-                        $(`#like-counter${post_id}`).text(res)
-                    },
-                    error: function (response) {
-                        console.log('error', response)
-                    }
-                })
-            })
-
-            $('.delete_friend').submit(function (e){
-                e.preventDefault();
-                const url = $(this).attr('action');
-                const receiver_id = $(this).attr('id')
-                const request_id = $("input[name='request_id']", this).val();
-
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'receiver_id': receiver_id,
-                        'request_id':request_id
-                    },
-                    success: function (response) {
-                        if(response['response'] === "success"){
-                            $('.delete_friend').attr("action", "send_friend_request").removeClass('delete_friend').addClass('send_request')
-                            $('#delete_friend_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "send_request_button").text("Отправить предложение дружбы")
-
-
-                        }
-                        else{
-
-                        }
-                        console.log(response)
-
-                    },
-                    error: function (response) {
-                        console.log('error', response)
-                    }
-                })
-            })
-            $('.accept_request').submit(function (e){
-                e.preventDefault();
-                const url = $(this).attr('action');
-                const receiver_id = $(this).attr('id')
-                const request_id = $("input[name='request_id']", this).val();
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'receiver_id': receiver_id,
-                        'request_id':request_id
-                    },
-                    success: function (response) {
-                        if(response['response'] === "success"){
-                            $('.accept_request').attr("action", "delete_friend").removeClass('accept_request').addClass('delete_friend')
-                            $('#accept_friend_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "delete_friend_button").text("Удалить")
-
-
-                        }
-                        else{
-
-                        }
-                        console.log(response)
-
-                    },
-                    error: function (response) {
-                        console.log('error', response)
-                    }
-                })
-            })
-            $('.send_request').submit(function (e){
-                e.preventDefault();
-                // {#const post_id = $(this).attr('id');#}
-                const url = $(this).attr('action');
-                const receiver_id = $(this).attr('id')
-
-                console.log(receiver_id)
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'receiver_id': receiver_id,
-                    },
-                    success: function (response) {
-                        if(response['response'] === "success"){
-
-                            {#$('.send_request').attr("action", "cancel_friend_request").removeClass('send_request').addClass('cancel_request')#}
-                            {#$('#send_request_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "cancel_request_button").text("Отменить")#}
-                            console.log($('.send_request'))
-
-                            $('.send_request')[0].style.display = 'none'
-
-                            $('.cancel_request')[0].style.display = 'block'
-
-
-                        }
-                        else{
-
-                        }
-                        console.log(response)
-
-                    },
-                    error: function (response) {
-                        console.log('error', response)
-                    }
-                })
-            })
-        $('.cancel_request').submit(function (e){
-                e.preventDefault();
-                // {#const post_id = $(this).attr('id');#}
-                const url = $(this).attr('action');
-                const receiver_id = $(this).attr('id')
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'receiver_id': receiver_id,
-                    },
-                    success: function (response) {
-                        if(response['response'] === "success"){
-
-                            console.log("Iamhere")
-                            {#$('.cancel_request').attr("action", "send_friend_request").removeClass('cancel_request').addClass('send_request')#}
-                            {#$('#cancel_request_button').removeClass('btn-danger').addClass('btn-primary').text("Отправить предложение дружбы")#}
-
-                             $('.cancel_request')[0].style.display = 'none'
-
-                            $('.send_request')[0].style.display = 'block'
-
-                        }
-                        else{
-
-                        }
-                        console.log(response)
-
-                    },
-                    error: function (response) {
-                        console.log('error', response)
-                    }
-                })
-            })
-
-            $('.comment_form').submit(function (e) {
-                e.preventDefault();
-                // {#const post_id = $(this).attr('id');#}
-
-                const post_id = $("input[name='id']", this).val();
-                const url = $(this).attr('action');
-                const parent_id = $("input[name='parent_id']", this).val();
-                const body = $(e.target[1]).val()
-
-
-                console.log(body)
-                // const user_id = {{ user.id }};
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'post_id': post_id,
-                        'parent_id': parent_id,
-                        'body': body
-                    },
-                    success: function (response) {
-
-                        var replies = '<div class="replies" id="replies'+response.comment_id+'"></div>';
-                        var comment_body = '<div class="comment-body"> <p>' + response.comment_body + '</p> <button class="reply-button" type="button" id="comment-reply' + response.comment_id + ' "post_id="' + response.post_id + '">Reply </button> </div>'
-                        var comment_heading = '<div class="comment-heading"> <div class="comment-voting"> <button type="button"> <span aria-hidden="true">&#9650;</span> <span class="sr-only">Vote up</span> </button> <button type="button"> <span aria-hidden="true">&#9660;</span> <span class="sr-only">Vote down</span> </button> </div> <div class="comment-info"> <a href="#" class="comment-author">' + response.author + '</a> <p class="m-0">22 points &bull; ' + response.date + ' </p> </div> </div>'
-                        var comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies+'</div>'
-                        comment_list = "#comment-list" + response.post_id
-
-
-
-                        if(response.parent_id !== null){
-                            replies = "#replies"+response.parent_id
-                            $(replies).append(comment);
-                        }
-                        else{
-                            $(comment_list).append(comment);
-                        }
-                        {#$("textarea[name='body']").val('');#}
-                        console.log(response)
-
-                    },
-                    error: function (response) {
-                        console.log('error', response)
-                    }
-                })
-            })
-
-        });
-        $(document).on('click', '.btn-comment', function (event) {
-            const comment = "comment-list" + event.currentTarget.id
-            const post_id = $(this).attr('id')
-            if (document.getElementById(comment).style.display === 'none') {
-                document.getElementById(comment).style.display = 'block';
-                document.getElementById('comment-form'+post_id).style.display='block';
-
-            } else {
-                document.getElementById(comment).style.display = 'none';
-                document.getElementById('comment-form'+post_id).style.display='none';
-            }
-        });
-
-        $(document).on('click', '.reply-button', function (event) {
-
-            const post_id = $(this).attr('post_id')
-            comment_id = event.target.id.replace(/\D/g, '');
-
-            $($('#comment-form'+post_id)[0][1]).val('Author name, ').focus();
-
-
-
-
-            document.getElementById('cancel-reply' + post_id).style.display = 'block';
-
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'parent_id',
-                value: comment_id
-            }).appendTo('.comment_form');
-            console.log(post_id)
-            // {#$(`#form-id${post_id}`)#}
-
-
-        });
-
-
-        $(document).on('click', '.button-cancel', function (event) {
-
-            const post_id = $(this).attr('post_id')
-            comment_id = event.target.id.replace(/\D/g, '');
-            document.getElementById('cancel-reply' + post_id).style.display = 'none';
-            $("input[name='parent_id']").remove()
-            {#$("textarea[name='body']").val('');#}
-        });
-</script>
+        </section>
+
+
+    {% endfor %}
+
 {% endblock %}

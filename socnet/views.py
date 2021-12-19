@@ -1,20 +1,17 @@
-from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
 from .forms import *
 from .models import Post, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import logout as django_logout
-import json
 
 from .utils import get_friend_request_or_false
 
@@ -330,31 +327,12 @@ class ProfileEditView(UpdateView):
 
 def ProfileView(request):
     return redirect('/profile/' + str(request.user.id))
-    # model = Post
-    # template_name = 'profile/profile.html'
-    # context_object_name = 'posts'
-    #
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['user'] = self.request.user
-    #     context['profile'] = UserProfile.objects.get(user_id=self.request.user.id)
-    #     try:
-    #         friend_list = FriendList.objects.get(user=self.request.user)
-    #     except FriendList.DoesNotExist:
-    #         friend_list = FriendList(user=self.request.user)
-    #         friend_list.save()
-    #     my_friends = friend_list.friends.all()
-    #     context['friends'] = my_friends
-    #
-    #     return context
-    #
-    # def get_queryset(self):
-    #     return Post.objects.order_by('-date_posted')
 
 
 class ProfileViewOther(DetailView):
     model = User
     template_name = 'profile/profile.html'
+    comment_form = CommentForm()
 
     def get_user_profile(self, username):
         return get_object_or_404(User, pk=self.kwargs.get('pk'))
@@ -366,6 +344,7 @@ class ProfileViewOther(DetailView):
         context['profile'] = UserProfile.objects.get(user=context['this_user'])
         context['my_profile'] = UserProfile.objects.get(user=self.request.user)
         context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk')))
+        context['c_form'] = self.comment_form
 
         try:
             friend_list = FriendList.objects.get(user=self.request.user)
