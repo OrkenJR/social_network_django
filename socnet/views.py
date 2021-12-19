@@ -440,10 +440,12 @@ def messages(request):
 class GroupView(DetailView):
     model = Group
     template_name = 'group/group.html'
+    comment_form = CommentForm()
 
     def get_context_data(self, **kwargs):
         context = super(GroupView, self).get_context_data(**kwargs)
         context['user'] = self.request.user
+        context['c_form'] = self.comment_form
         try:
             context['posts'] = Post.objects.filter(group_author=Group.objects.get(pk=self.kwargs.get('pk'))).all()
         except Post.DoesNotExist:

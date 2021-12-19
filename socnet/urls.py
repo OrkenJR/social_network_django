@@ -36,7 +36,6 @@ urlpatterns = [
     path('friends/', FriendListView.as_view(), name='friends'),
     path('groups/', GroupList.as_view(), name='groups'),
     path('groups/<int:pk>', GroupView.as_view(), name='group'),
-    # path('login/', login, name='login'),
     path('logout/', logout, name='logout'),
     path('login/', auth_views.LoginView.as_view(template_name='login/login.html', form_class=LoginForm), name='login'),
     path('register/', UserRegistrationView.as_view(), name='register'),
@@ -49,5 +48,4 @@ urlpatterns = [
     url('follow_group', follow_group, name='follow_group'),
     url('unfollow', unfollow, name='unfollow'),
 ]
-# r'^profile/(?P<username>\w+)/$
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
