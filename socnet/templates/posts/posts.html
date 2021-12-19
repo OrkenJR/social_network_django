@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'style/comments.css' %}">
 {% endblock %}
 {% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'js/posts.js' %}"></script>
 {% endblock %}
 {% block content %}
@@ -35,7 +36,7 @@
                     <a href="{{ post|get_post_author_url }}" class="group-title">{{ post|get_post_author }}</a>
                     <span class="text-muted post-date">{{ post.date_posted|date:"G:i, F d" }}</span>
                 </div>
-                {% if post.author.id == user.id or post.group_author.admin.id == user.id%}
+                {% if post.author.id == user.id or post.group_author.admin.id == user.id %}
                     <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}"
                                                                         alt="like"
                                                                         class="like-icon"></a>
@@ -79,7 +80,7 @@
                         <input type="hidden" name="type" value="like">
                         <button class="btn btn-default" type="submit">
 
-                            {% if post.likes.all.count == 0 or user not in post.likes.all%}
+                            {% if post.likes.all.count == 0 or user not in post.likes.all %}
                                 <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}" alt="like"
                                      class="like-icon">
                             {% endif %}
@@ -89,11 +90,11 @@
                                     <img id="like-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
                                          alt="like"
                                          class="like-icon">
-{#                                {% else %}#}
-{#                                    {% if user not in post.likes.all%}#}
-{#                                        <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"#}
-{#                                             alt="like"#}
-{#                                             class="like-icon">{% endif %}#}
+                                    {#                                {% else %}#}
+                                    {#                                    {% if user not in post.likes.all%}#}
+                                    {#                                        <img id="like-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"#}
+                                    {#                                             alt="like"#}
+                                    {#                                             class="like-icon">{% endif %}#}
 
 
                                 {% endif %}
@@ -119,12 +120,12 @@
                                     <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/filled_like.png' %}"
                                          alt="dislike"
                                          class="dislike-icon">
-{#                                {% else %}#}
-{#                                    {% if user not in post.dislikes.all %}#}
-{#                                        <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"#}
-{#                                             alt="dislike"#}
-{#                                             class="dislike-icon">#}
-{#                                    {% endif %}#}
+                                    {#                                {% else %}#}
+                                    {#                                    {% if user not in post.dislikes.all %}#}
+                                    {#                                        <img id="dislike-img{{ post.id }}" src="{% static 'src/icon/like.svg' %}"#}
+                                    {#                                             alt="dislike"#}
+                                    {#                                             class="dislike-icon">#}
+                                    {#                                    {% endif %}#}
 
                                 {% endif %}
 
@@ -219,146 +220,5 @@
 
 
     {% endfor %}
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-
-
-        $(document).ready(function () {
-            let display = false
-
-            $('.like_form').submit(function (e) {
-                e.preventDefault()
-                const post_id = $(this).attr('id')
-                const type = $("input[name='type']", this).val();
-                const url = $(this).attr('action')
-                const likes = parseInt($(`#like-counter${post_id}`).text())
-                // const user_id = {{ user.id }}
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'post_id': post_id,
-                        'type': type
-                    },
-                    success: function (response) {
-                        if (type === 'dislike') {
-
-                            if (response.is_liked === false) {
-                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
-                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            } else {
-                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            }
-                            res = parseInt(response.likes)
-                        } else if (type === 'like') {
-
-                            if (response.is_liked === false) {
-                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
-                                $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            } else {
-                                $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
-                            }
-                            res = parseInt(response.likes)
-                        }
-
-                        $(`#like-counter${post_id}`).text(res)
-                    },
-                    error: function (response) {
-                        console.error('error', response)
-                    }
-                })
-            })
-
-
-            $('.comment_form').submit(function (e) {
-                e.preventDefault();
-
-                const post_id = $("input[name='id']", this).val();
-                const url = $(this).attr('action');
-                const parent_id = $("input[name='parent_id']", this).val();
-                const body = $(e.target[1]).val();
-
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'post_id': post_id,
-                        'parent_id': parent_id,
-                        'body': body
-                    },
-                    success: function (response) {
-
-                        var replies = '<div class="replies" id="replies' + response.comment_id + '"></div>';
-                        var comment_body = '<div class="comment-body"> <p>' + response.comment_body + '</p> <button class="reply-button" type="button" id="comment-reply' + response.comment_id + ' "post_id="' + response.post_id + '">Reply </button> </div>'
-                        var comment_heading = '<div class="comment-heading"> <div class="comment-info"> <a href="#" class="comment-author">' + response.author + '</a> <p class="m-0"> ' + response.date + ' </p> </div> </div>'
-                        var comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies + '</div>'
-                        comment_list = "#comment-list" + response.post_id
-
-                        if (response.parent_id !== null) {
-                            replies = "#replies" + response.parent_id
-                            $(replies).append(comment);
-                        } else {
-                            $(comment_list).append(comment);
-                        }
-
-                        $(e.target[1]).val('').focus();
-
-                    },
-                    error: function (response) {
-                        console.error('error', response)
-                    }
-                })
-            })
-
-        });
-        $(document).on('click', '.btn-comment', function (event) {
-            const comment = "comment-list" + event.currentTarget.id
-            const post_id = $(this).attr('id')
-            if (document.getElementById(comment).style.display === 'none') {
-                document.getElementById(comment).style.display = 'block';
-                document.getElementById('comment-form' + post_id).style.display = 'block';
-
-            } else {
-                document.getElementById(comment).style.display = 'none';
-                document.getElementById('comment-form' + post_id).style.display = 'none';
-            }
-        });
-
-        $(document).on('click', '.reply-button', function (event) {
-
-            const post_id = $(this).attr('post_id');
-            comment_id = event.target.id.replace(/\D/g, '');
-
-            let userName = $(this).attr('userName');
-
-            $($('#comment-form' + post_id)[0][1]).val(userName + ', ').focus();
-
-            document.getElementById('cancel-reply' + post_id).style.display = 'block';
-
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'parent_id',
-                value: comment_id
-            }).appendTo('.comment_form');
-
-
-        });
-
-
-        $(document).on('click', '.button-cancel', function (event) {
-
-            const post_id = $(this).attr('post_id');
-            comment_id = event.target.id.replace(/\D/g, '');
-            document.getElementById('cancel-reply' + post_id).style.display = 'none';
-            $("input[name='parent_id']").remove();
-
-            $(event.target.form[1]).val('').focus();
-        });
-
-    </script>
 
 {% endblock %}
