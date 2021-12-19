@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %}Друзья{% endblock %}
 {% block style %}
+    <!--suppress JSUnresolvedVariable -->
     <link rel="stylesheet" type="text/css" href="{% static 'style/friends-list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style/listing.css' %}">
 {% endblock %}
@@ -13,67 +14,70 @@
     <section class="row search-bar">
 
         <div class="input-group">
-            <input id ="search_friend" class="form-control mr-1 search-input" type="text" placeholder="Найти друзей...">
+            <input id="search_friend" class="form-control mr-1 search-input" type="text" placeholder="Найти друзей...">
             <button class="btn btn-outline-secondary border" type="button">Искать</button>
         </div>
     </section>
 
 
     <section id="friend-list-section">
-    {% for friend in friends %}
-        <a href="{% url 'profile_view_others' friend.user.id%}">
-            <section class="row list-element">
-                <div class="list-element-image-wrapper">
-                    <img src="{{ friend.image.url }}" alt="person-avatar" class="list-element-image">
-                </div>
-
-                <div class="col-6">
-                    <div class="list-element-info">
-                        <div class="list-element-title">{{ friend.user.username }}</div>
-                        <div class="list-element-text mb-1">IITU</div>
+        {% for friend in friends %}
+            <a href="{% url 'profile_view_others' friend.user.id %}">
+                <section class="row list-element">
+                    <div class="list-element-image-wrapper">
+                        <img src="{{ friend.image.url }}" alt="person-avatar" class="list-element-image">
                     </div>
-                </div>
 
-            </section>
-        </a>
+                    <div class="col-6">
+                        <div class="list-element-info">
+                            <div class="list-element-title">{{ friend.user.username }}</div>
+                            <div class="list-element-text mb-1">{{ friend.quote }}</div>
+                        </div>
+                    </div>
 
-    {% endfor %}
+                </section>
+            </a>
+
+        {% endfor %}
     </section>
-
 
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.2/underscore-umd-min.js">
 
     </script>
     <script>
 
-        const user_data = '{{ query_set }}'
-        const cleaned_user_data = JSON.parse(user_data.replace(/&quot;/g, '"'))
+        const user_data = '{{ query_set }}';
+        const cleaned_user_data = JSON.parse(user_data.replace(/&quot;/g, '"'));
 
-        const profile_data = '{{ profile_query_set }}'
-        const cleaned_profile_data = JSON.parse(profile_data.replace(/&quot;/g, '"'))
+        const profile_data = '{{ profile_query_set }}';
+        const cleaned_profile_data = JSON.parse(profile_data.replace(/&quot;/g, '"'));
 
-
-        const input = document.getElementById('search_friend')
-        const friend_list = document.getElementById("friend-list-section")
+        const friend_list = document.getElementById("friend-list-section");
 
 
-        console.log('profile_data',cleaned_profile_data)
-        console.log('user_data',cleaned_user_data)
+        let filteredUsers = [];
+        document.getElementById('search_friend').addEventListener('keyup', (e) => {
+            friend_list.innerHTML = "";
 
+            cleaned_user_data.filter(user => user.fields.username.includes(e.target.value)).forEach(user => {
+                const profileRef = cleaned_profile_data.filter(profile => profile.fields.user === user.pk)[0];
 
-        let filteredArr = []
-        let filteredArrUsers = []
-        input.addEventListener('keyup', (e)=>{
-            friend_list.innerHTML = ""
+                friend_list.innerHTML += '<a href=/profile/' + profileRef.fields.user + '>'
+                    + '<section class="row list-element">'
+                    + '<div class="list-element-image-wrapper">'
+                    + '<img src="/images/' + profileRef.fields.image + '" class="list-element-image">'
+                    + '</div>'
+                    + '<div class="col-6">'
+                    + '<div class="list-element-info">'
+                    + '<div class="list-element-title">' + user.fields.username + '</div>'
+                    + '<div class="list-element-text mb-1">' + profileRef.fields.quote + '</div>'
+                    + '</div>'
+                    + '</div>'
+                    + '</section>'
+                    + '</a>';
+            });
 
-            filteredArr = cleaned_profile_data.filter(info=> info['fields']['user'])
-            if(filteredArr.length>0){
-                filteredArr.map(item=>{
-                    friend_list.innerHTML
-                })
-            }
-        })
-
+        });
 
 
     </script>

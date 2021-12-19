@@ -43,10 +43,12 @@
 
 .list-element-image-wrapper {
   width: 80px;
+  height: 80px;
 }
 
 .list-element-image {
   height: 80px;
+  width: 80px;
 }
 
 .list-element-info {
