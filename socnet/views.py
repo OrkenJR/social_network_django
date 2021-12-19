@@ -19,6 +19,49 @@ import json
 from .utils import get_friend_request_or_false
 
 
+def unfollow(request):
+    user = request.user
+    response = {}
+    if request.method == "POST":
+        group_id = request.POST.get("group_id")
+
+        if group_id:
+            group = Group.objects.get(pk=group_id)
+            if group:
+                if user in group.followers.all():
+                    group.followers.remove(user)
+                    group.save()
+                    response["response"] = "success"
+                else:
+                    response["response"] = "error"
+            else:
+                response["response"] = "error"
+        else:
+            response["response"] = "error"
+
+    return JsonResponse(response)
+
+
+def follow_group(request):
+    user = request.user
+    response = {}
+    if request.method == "POST":
+        group_id = request.POST.get("group_id")
+
+        if group_id:
+            group = Group.objects.get(pk=group_id)
+            if group:
+                group.followers.add(user)
+                group.save()
+                response["response"] = "success"
+            else:
+                response["response"] = "error"
+        else:
+            response["response"] = "error"
+
+    return JsonResponse(response)
+
+
 class FriendListView(ListView):
     model = UserProfile
     template_name = 'friends-list/friends-list.html'
@@ -232,7 +275,11 @@ class HomeView(ListView):
         return context
 
     def get_queryset(self):
-        return Post.objects.order_by('-date_posted')
+        groups = Group.objects.filter(followers__username__contains=self.request.user.username)
+        friends = FriendList.objects.get(user=self.request.user).friends.all()
+
+        return Post.objects.filter(group_author__in=groups).order_by('-date_posted') | Post.objects.filter(
+            author__in=friends).order_by('-date_posted')
 
 
 class UserRegistrationView(SuccessMessageMixin, CreateView):

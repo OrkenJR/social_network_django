@@ -46,6 +46,8 @@ urlpatterns = [
     url('cancel_friend_request', cancel_friend_request, name='cancel_friend_request'),
     url('accept_friend_request', accept_friend_request, name='accept_friend_request'),
     url('delete_friend', delete_friend, name='delete_friend'),
+    url('follow_group', follow_group, name='follow_group'),
+    url('unfollow', unfollow, name='unfollow'),
 ]
 # r'^profile/(?P<username>\w+)/$
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

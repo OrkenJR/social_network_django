@@ -70,6 +70,8 @@
                 </form>
         {% else %}
             {% if friend_request_enum == "from" %}
+                {#                Это срабатвывает когда ты принимаешь запрос#}
+
                 <form method="post" action="accept_friend_request" class="accept_request" id="{{ this_user.id }}">
                 {% csrf_token %}
                 <input type="hidden" name="user_id" value="{{ this_user.id }}">
@@ -77,6 +79,7 @@
                     <button id="accept_friend_button" class="btn btn-primary" type="submit">Принять</button>
                 </form>
             {% elif friend_request_enum == "to" %}
+{#                Это срабатвывает когда ты отменяешь запрос#}
 
                 <form method="post" action="cancel_friend_request" class="cancel_request" id="{{ this_user.id }}">
                 {% csrf_token %}
@@ -84,13 +87,26 @@
                     <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
                 </form>
 
+
+                <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}" style="display: none">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                    <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение дружбы</button>
+                </form>
+
             {% else %}
-
-
+                {#                Это срабатвывает когда ты отправляешь кому-то запрос#}
                 <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}">
                 {% csrf_token %}
                 <input type="hidden" name="user_id" value="{{ this_user.id }}">
                     <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение дружбы</button>
+                </form>
+
+
+                 <form method="post" action="cancel_friend_request" class="cancel_request" id="{{ this_user.id }}" style="display: none">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ this_user.id }}">
+                    <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
                 </form>
             {% endif %}
         {% endif %}
@@ -306,6 +322,8 @@ $(document).ready(function () {
                 // {#const post_id = $(this).attr('id');#}
                 const url = $(this).attr('action');
                 const receiver_id = $(this).attr('id')
+
+                console.log(receiver_id)
                 $.ajax({
                     type: 'POST',
                     url: url,
@@ -315,9 +333,14 @@ $(document).ready(function () {
                     },
                     success: function (response) {
                         if(response['response'] === "success"){
-                            $('.send_request').attr("action", "cancel_friend_request").removeClass('send_request').addClass('cancel_request')
-                            $('#send_request_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "cancel_request_button").text("Отменить")
 
+                            {#$('.send_request').attr("action", "cancel_friend_request").removeClass('send_request').addClass('cancel_request')#}
+                            {#$('#send_request_button').removeClass('btn-primary').addClass('btn-danger').attr("id", "cancel_request_button").text("Отменить")#}
+                            console.log($('.send_request'))
+
+                            $('.send_request')[0].style.display = 'none'
+
+                            $('.cancel_request')[0].style.display = 'block'
 
 
                         }
@@ -348,8 +371,12 @@ $(document).ready(function () {
                         if(response['response'] === "success"){
 
                             console.log("Iamhere")
-                            $('.cancel_request').attr("action", "send_friend_request").removeClass('cancel_request').addClass('send_request')
-                            $('#cancel_request_button').removeClass('btn-danger').addClass('btn-primary').text("Отправить предложение дружбы")
+                            {#$('.cancel_request').attr("action", "send_friend_request").removeClass('cancel_request').addClass('send_request')#}
+                            {#$('#cancel_request_button').removeClass('btn-danger').addClass('btn-primary').text("Отправить предложение дружбы")#}
+
+                             $('.cancel_request')[0].style.display = 'none'
+
+                            $('.send_request')[0].style.display = 'block'
 
                         }
                         else{
