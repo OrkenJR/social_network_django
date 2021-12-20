@@ -70,6 +70,7 @@ button:active {
     border: none;
     padding: 3px 10px;
     border-radius: 5px;
+    margin-top: 1rem;
 
     transition: background-color 350ms;
 }

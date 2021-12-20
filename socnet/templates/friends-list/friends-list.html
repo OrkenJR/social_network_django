@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Друзья{% endblock %}
 {% block style %}
-    <!--suppress JSUnresolvedVariable -->
+    <!--suppress JSUnresolvedVariable, HtmlFormInputWithoutLabel, JSUnresolvedLibraryURL, HtmlUnknownTarget, SpellCheckingInspection -->
     <link rel="stylesheet" type="text/css" href="{% static 'style/friends-list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style/listing.css' %}">
 {% endblock %}
@@ -23,7 +23,7 @@
     <section id="friend-list-section">
         {% for friend in friends %}
             <a href="{% url 'profile_view_others' friend.user.id %}">
-                <section class="row list-element">
+                <section class="row list-element card">
                     <div class="list-element-image-wrapper">
                         <img src="{{ friend.image.url }}" alt="person-avatar" class="list-element-image">
                     </div>
@@ -63,9 +63,9 @@
                 const profileRef = cleaned_profile_data.filter(profile => profile.fields.user === user.pk)[0];
 
                 friend_list.innerHTML += '<a href=/profile/' + profileRef.fields.user + '>'
-                    + '<section class="row list-element">'
+                    + '<section class="row list-element card">'
                     + '<div class="list-element-image-wrapper">'
-                    + '<img src="/images/' + profileRef.fields.image + '" class="list-element-image">'
+                    + '<img src="/images/' + profileRef.fields.image + '" class="list-element-image" alt="person-avatar">'
                     + '</div>'
                     + '<div class="col-6">'
                     + '<div class="list-element-info">'

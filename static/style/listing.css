@@ -16,6 +16,7 @@
   padding: 1rem;
   cursor: pointer;
   background-color: #FFFFFF;
+  flex-direction: row;
 
   transition: 400ms background-color;
 }

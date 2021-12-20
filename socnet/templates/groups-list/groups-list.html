@@ -21,7 +21,7 @@
     </section>
 
     {% for group in groups %}
-        <a href="{% url 'group' group.id%}">
+        <a href="{% url 'group' group.id %}">
             <section class="row list-element">
                 <div class="list-element-image-wrapper">
                     <img src="{{ group.image.url }}" alt="group-logo" class="list-element-image">

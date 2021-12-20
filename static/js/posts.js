@@ -4,7 +4,7 @@ $(document).ready(function () {
 
     $('.like_form').submit(function (e) {
         e.preventDefault()
-        const post_id = $(this).attr('id')
+        const post_id = $(this).attr('id');
         const type = $("input[name='type']", this).val();
         const url = $(this).attr('action');
         let res;
@@ -21,7 +21,7 @@ $(document).ready(function () {
                 if (type === 'dislike') {
 
                     if (response.is_liked === false) {
-                        $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
+                        $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.svg');
                         $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
                     } else {
                         $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
@@ -30,7 +30,7 @@ $(document).ready(function () {
                 } else if (type === 'like') {
 
                     if (response.is_liked === false) {
-                        $(`#like-img${post_id}`).attr('src', 'static/src/icon/filled_like.png');
+                        $(`#like-img${post_id}`).attr('src', 'static/src/icon/filled_like.svg');
                         $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
                     } else {
                         $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
