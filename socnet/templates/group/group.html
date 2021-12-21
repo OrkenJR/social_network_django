@@ -70,7 +70,7 @@
 
     {% if user.id == group.admin.id %}
         <section>
-            <a class="btn btn-primary" href="{% url 'post_create_group' %}">Добавить пост</a>
+            <a class="btn btn-primary" href="{% url 'post_create_group' group.id%}">Добавить пост</a>
         </section>
 
     {% endif %}
