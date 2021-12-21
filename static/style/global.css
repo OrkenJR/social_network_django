@@ -122,60 +122,20 @@ nav {
 
 /* POPOVER SECTION */
 
-.popover-wrapper {
-    position: absolute;
-    margin-top: 1.5rem;
-    display: inline-block;
-    width: 250px;
-    right: 5%;
-    top: 4rem;
-}
-
-.popover-content {
-    opacity: 0;
-    visibility: hidden;
-    position: absolute;
-    transform: translate(0, 10px);
-    background-color: #e6e6e6;
-    padding: 1rem 0;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-    width: inherit;
+.dropdown-menu {
     border-radius: 10px;
 }
 
-.popover-content:before {
-    position: absolute;
-    z-index: -1;
-    content: "";
-    right: calc(50% - 10px);
-    top: -8px;
-    border-style: solid;
-    border-width: 0 10px 10px 10px;
-    border-color: transparent transparent #e6e6e6 transparent;
-    transition-duration: 0.3s;
-    transition-property: transform;
-}
+.dropdown-item {
+    transition: background-color 350ms;
 
-.popover-opened {
-    z-index: 15;
-    opacity: 1;
-    visibility: visible;
-    transform: translate(0, -20px);
-    transition: all 0.5s cubic-bezier(0.75, -0.02, 0.2, 0.97);
-}
-
-.popover-menu-ul a {
-    height: 3rem;
-    transition: background-color 0.3s;
     padding: 0.5rem;
     cursor: pointer;
-
-    display: flex;
-    flex-direction: column;
+    height: 3em;
 }
 
-.popover-menu-ul a:hover {
-    background-color: #d6d6d6;
+.dropdown-item:hover {
+    background-color: #e6e6e6;
 }
 
 @media (max-width: 700px) {
@@ -196,7 +156,7 @@ nav {
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
     header {
         padding: 1rem 0.5rem !important;
     }

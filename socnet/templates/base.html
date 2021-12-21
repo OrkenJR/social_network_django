@@ -28,12 +28,23 @@
 
     <img src="{% static 'src/images/logo.jpg' %}" alt="logo" class="logo">
 
-    <div class="person-info-wrapper" id='person-info-wrapper-id' onclick="rotate(event)">
+{#    <div class="person-info-wrapper" id='person-info-wrapper-id' onclick="rotate(event)">#}
+{##}
+{#        <span class="name">Menu</span>#}
+{#        <img src="{% static 'src/icon/down-arrow.svg' %}" alt="down-arrow" id="down-icon">#}
+{##}
+{#    </div>#}
 
-        <span class="name">Menu</span>
-        <img src="{% static 'src/icon/down-arrow.svg' %}" alt="down-arrow" id="down-icon">
-
-    </div>
+        <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Меню
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="/profile">Профиль</a>
+          <a class="dropdown-item" href="#">Настройки</a>
+          <a class="dropdown-item" href="/logout">Выйти</a>
+        </div>
+      </div>
 
 
 </header>
@@ -47,6 +58,8 @@
         </div>
     </div>
 </div>
+
+
 
 <main>
     <nav>

@@ -18,27 +18,31 @@ $(document).ready(function () {
                 'type': type
             },
             success: function (response) {
+
+                const likeIcon = $('#like-img' + post_id);
+                const dislikeIcon = $('#dislike-img' + post_id);
+
                 if (type === 'dislike') {
 
                     if (response.is_liked === false) {
-                        $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/filled_like.svg');
-                        $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                        dislikeIcon.attr('src', 'static/src/icon/filled_like.svg');
+                        likeIcon.attr('src', 'static/src/icon/like.svg');
                     } else {
-                        $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                        dislikeIcon.attr('src', 'static/src/icon/like.svg');
                     }
                     res = parseInt(response.likes)
                 } else if (type === 'like') {
 
                     if (response.is_liked === false) {
-                        $(`#like-img${post_id}`).attr('src', 'static/src/icon/filled_like.svg');
-                        $(`#dislike-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                        likeIcon.attr('src', 'static/src/icon/filled_like.svg');
+                        dislikeIcon.attr('src', 'static/src/icon/like.svg');
                     } else {
-                        $(`#like-img${post_id}`).attr('src', 'static/src/icon/like.svg');
+                        likeIcon.attr('src', 'static/src/icon/like.svg');
                     }
-                    res = parseInt(response.likes)
+                    res = parseInt(response.likes);
                 }
 
-                $(`#like-counter${post_id}`).text(res)
+                $(`#like-counter${post_id}`).text(res);
             },
             error: function (response) {
                 console.error('error', response)
