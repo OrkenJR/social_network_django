@@ -4,56 +4,60 @@
 {% load crispy_forms_tags %}
 {% block title %}Профиль{% endblock %}
 {% block style %}
-<link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'style/profile.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/profile.css' %}">
 {% endblock %}
 {% block script %}
-<script src="{% static 'js/profile.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}
 {% block content %}
-<section class="container-* person-info-container">
-    <div class="row">
+    <section class="container-* person-info-container">
+        <div class="row profile-editor-container">
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Profile Info</legend>
-                {{ user_form|crispy }}
-                {{ profile_form.birth_date|as_crispy_field }}
-                {{ profile_form.quote|as_crispy_field }}
+            <form method="POST" enctype="multipart/form-data" class="form-wrapper">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Profile Info</legend>
+                    {{ user_form|crispy }}
+
+                    <div class="birth-date-wrapper">
+                        <label for="birth_date">Birth date</label>
+                        <input type="date" name="birth_date" id="birth_date" value="{{ userprofile.birth_date | date }}">
+                    </div>
+
+                    {{ profile_form.quote|as_crispy_field }}
 
 
+                    <div class="col d-flex flex-column justify-content-between align-items-center">
+                        <img src="{{ profile.image.url }}" class="person-avatar" alt="person-avatar">
+                    </div>
 
 
-                <div class="col d-flex flex-column justify-content-between align-items-center">
-                    <img src="{{ profile.image.url }}" class="person-avatar">
+                    <label class="btn btn-outline-secondary border">
+                        Выбрать фото
+                        {{ profile_form.image }}
+                    </label>
+
+
+                </fieldset>
+
+                <div style="width: 100%; height: 200px;">
+                    <iframe src="https://yandex.kz/map-widget/v1/-/CCUqqMQpkC" height="100%" width="100%"
+                            frameborder="1" allowfullscreen="true" style="position:relative;"></iframe>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-outline-info" type="submit">Update</button>
                 </div>
 
 
-                <label class="btn btn-outline-secondary border">
-                    Выбрать фото
-                    {{ profile_form.image}}
-                </label>
+            </form>
 
 
-            </fieldset>
+        </div>
 
 
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Update</button>
-            </div>
-
-
-
-        </form>
-
-
-    </div>
-
-
-</section>
-
-
-
+    </section>
 
 {% endblock %}

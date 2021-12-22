@@ -10,8 +10,8 @@
 }
 
 .person-info-container .btn {
-  margin-top: 1rem;
-  width: 75%;
+  margin-top: 3rem;
+  width: 100%;
 }
 
 .person-name {
@@ -33,6 +33,22 @@
 
 .person-info-container .ui-link {
   color: #2a5885;
+}
+
+.profile-editor-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-wrapper {
+  width: 100%;
+}
+
+.birth-date-wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 700px) {
