@@ -20,10 +20,6 @@
   transition: 400ms background-color;
 }
 
-.list-element:last-child {
-  border-radius: 0 0 10px 10px;
-}
-
 .list-element:hover {
   background: rgb(227, 227, 227);
 }

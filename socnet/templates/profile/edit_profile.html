@@ -23,7 +23,8 @@
 
                     <div class="birth-date-wrapper">
                         <label for="birth_date">Birth date</label>
-                        <input type="date" name="birth_date" id="birth_date" value="{{ userprofile.birth_date | date }}">
+                        <input type="date" name="birth_date" id="birth_date"
+                               value="{{ userprofile.birth_date | date }}">
                     </div>
 
                     {{ profile_form.quote|as_crispy_field }}

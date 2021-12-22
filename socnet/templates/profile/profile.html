@@ -20,7 +20,11 @@
 
 {% block content %}
     <section class="container-* person-info-container">
-        <div class="row">
+        <div class="row profile-items-container">
+
+            <div class="col">
+                <img src="{{ profile.image.url }}" class="person-avatar" alt="">
+            </div>
 
             <div class="col d-flex flex-column justify-content-between">
 
@@ -126,15 +130,8 @@
                     {% endif %}
                 {% endif %}
 
+                <a class="btn btn-primary" href="{% url 'message' chat_id %}">Написать сообщение</a>
 
-            </div>
-
-            <div class="col d-flex flex-column justify-content-between align-items-center">
-                <img src="{{ profile.image.url }}" class="person-avatar" alt="">
-
-                {% if is_me %}
-                    <button class="btn btn-outline-secondary border" type="button">Изменить аватар</button>
-                {% endif %}
 
             </div>
 
