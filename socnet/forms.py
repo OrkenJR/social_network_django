@@ -3,6 +3,12 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .models import *
 
 
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['text']
+        labels = {'text': ""}
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comments

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load tags %}
 {% block title %}Message list{% endblock %}
 {% block style %}
         <link rel="stylesheet" type="text/css" href="{% static 'style/listing.css' %}">
@@ -25,7 +26,8 @@
 
     <!-- 1 LIST ELEMENT-->
 
-    <a href="../messages/messages.html">
+    {% for message in chats %}
+         <a href="{% url 'message' message.id%}">
       <section class="row list-element">
 
         <div class="list-element-image-wrapper">
@@ -34,7 +36,7 @@
 
         <div class="col">
           <div class="list-element-info">
-            <div class="list-element-title-with-time"><span>Ерасыл</span>
+            <div class="list-element-title-with-time"><span>{% get_chat_member_name message.participants user %}</span>
               <span class="text-muted font-weight-normal">12:21</span>
             </div>
             <div class="list-element-text mb-1">Здарова</div>
@@ -43,120 +45,10 @@
 
       </section>
     </a>
+    {% endfor %}
+
 
     <!-- 2 LIST ELEMENT-->
 
-    <a href="../messages/messages.html">
-      <section class="row list-element">
 
-        <div class="list-element-image-wrapper">
-          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
-        </div>
-
-        <div class="col">
-          <div class="list-element-info">
-            <div class="list-element-title-with-time">
-              <span>Ерасыл1</span>
-              <span class="text-muted font-weight-normal">09:12</span>
-            </div>
-            <div class="list-element-text mb-1">
-              Привет
-            </div>
-          </div>
-        </div>
-
-      </section>
-    </a>
-
-    <!-- 3 LIST ELEMENT-->
-
-    <a href="../messages/messages.html">
-      <section class="row list-element">
-        <div class="list-element-image-wrapper">
-          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
-        </div>
-
-        <div class="col">
-          <div class="list-element-info">
-            <div class="list-element-title-with-time">
-              <span>Ерасыл2</span>
-              <span class="text-muted font-weight-normal">03:02</span>
-            </div>
-            <div class="list-element-text mb-1">
-              <img src="../../../static/src/images/person.png" alt="person-avatar" class="inner-person-avatar">
-              Ок)
-            </div>
-          </div>
-        </div>
-
-      </section>
-    </a>
-
-    <!-- 4 LIST ELEMENT-->
-
-    <a href="../messages/messages.html">
-      <section class="row list-element">
-
-        <div class="list-element-image-wrapper">
-          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
-        </div>
-
-        <div class="col">
-          <div class="list-element-info">
-            <div class="list-element-title-with-time">
-              <span>Оркен</span>
-              <span class="text-muted font-weight-normal">24 сен</span>
-            </div>
-            <div class="list-element-text mb-1">Hi</div>
-          </div>
-        </div>
-
-      </section>
-    </a>
-
-    <!-- 5 LIST ELEMENT-->
-
-    <a href="../messages/messages.html">
-      <section class="row list-element">
-
-        <div class="list-element-image-wrapper">
-          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
-        </div>
-
-        <div class="col">
-          <div class="list-element-info">
-            <div class="list-element-title-with-time">
-              <span>Оркен1</span>
-              <span class="text-muted font-weight-normal">22 сен</span>
-            </div>
-            <div class="list-element-text mb-1">Пойдет</div>
-          </div>
-        </div>
-
-      </section>
-    </a>
-
-    <!-- 6 LIST ELEMENT-->
-
-    <a href="../messages/messages.html">
-      <section class="row list-element">
-        <div class="list-element-image-wrapper">
-          <img src="../../../static/src/images/person.png" alt="person-avatar" class="list-element-image">
-        </div>
-
-        <div class="col">
-          <div class="list-element-info">
-            <div class="list-element-title-with-time">
-              <span>Оркен2</span>
-              <span class="text-muted font-weight-normal">20 сен</span>
-            </div>
-            <div class="list-element-text mb-1">
-              <img src="../../../static/src/images/person.png" alt="person-avatar" class="inner-person-avatar">
-              Сам как?
-            </div>
-          </div>
-        </div>
-
-      </section>
-    </a>
 {% endblock %}

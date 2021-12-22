@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
 from .forms import *
 from .models import Post, UserProfile
@@ -442,8 +443,40 @@ class PostDeleteView(DeleteView):
     success_url = '/'
 
 
-def messages(request):
-    return render(request, 'messages-list/messages-list.html')
+class ChatView(View):
+    def get(self, request):
+        chats = Chat.objects.filter(participants__in=[request.user.id]).all()
+        return render(request, 'messages-list/messages-list.html', {'user': request.user, 'chats': chats})
+
+
+class MessageView(View):
+    def get(self, request, chat_id):
+        try:
+            chat = Chat.objects.get(id=chat_id)
+            message_list = Message.objects.filter(chat=chat).all().order_by('-created').reverse()
+
+        except Chat.DoesNotExist:
+            chat = None
+
+        return render(
+            request,
+            'messages/messages.html',
+            {
+                'friend_name':chat.participants.filter(~Q(pk=request.user.id))[0].username,
+                'user': request.user,
+                'chat': chat,
+                'message_list': message_list,
+                'form': MessageForm()
+            }
+        )
+    def post(self, request, chat_id):
+        form = MessageForm(data=request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.chat_id = chat_id
+            message.author = request.user
+            message.save()
+        return redirect(reverse('messages', kwargs={'chat_id': chat_id}))
 
 
 class GroupView(DetailView):
