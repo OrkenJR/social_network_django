@@ -355,6 +355,8 @@ class ProfileViewOther(DetailView):
         context['my_profile'] = UserProfile.objects.get(user=self.request.user)
         context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk')))
         context['c_form'] = self.comment_form
+        context['chat_id'] = Chat.objects.filter(
+            participants__in=[self.request.user.id, context['this_user'].id]).first().id
 
         try:
             friend_list = FriendList.objects.get(user=self.request.user)
@@ -462,13 +464,14 @@ class MessageView(View):
             request,
             'messages/messages.html',
             {
-                'friend_name':chat.participants.filter(~Q(pk=request.user.id))[0].username,
+                'friend_name': chat.participants.filter(~Q(pk=request.user.id))[0].username,
                 'user': request.user,
                 'chat': chat,
                 'message_list': message_list,
                 'form': MessageForm()
             }
         )
+
     def post(self, request, chat_id):
         form = MessageForm(data=request.POST)
         if form.is_valid():
@@ -507,7 +510,8 @@ class GroupList(ListView):
 
     def get_queryset(self):
         # Group.objects.filter(followers__in=self.request.user).all()
-        groups = Group.objects.filter(followers__username__contains=self.request.user.username).all() | Group.objects.filter(
+        groups = Group.objects.filter(
+            followers__username__contains=self.request.user.username).all() | Group.objects.filter(
             admin=self.request.user).all()
 
         return groups.distinct()

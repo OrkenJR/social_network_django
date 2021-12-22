@@ -247,4 +247,14 @@ nav {
         margin-left: 5px;
     }
 
+    .profile-items-container {
+        display: flex;
+        flex-direction: column !important;
+    }
+
+    .person-avatar {
+        width: 100% !important;
+        height: 200px !important;
+    }
+
 }

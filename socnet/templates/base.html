@@ -33,12 +33,12 @@
     <div class="dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
-            Меню
+            Menu
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="/profile">Профиль</a>
-            <a class="dropdown-item" href="#">Настройки</a>
-            <a class="dropdown-item" href="/logout">Выйти</a>
+            <a class="dropdown-item" href="/profile">Profile</a>
+            <a class="dropdown-item" href="{{ user|get_edit_profile_page }}">Configuration</a>
+            <a class="dropdown-item" href="/logout">Logout</a>
         </div>
     </div>
 
@@ -48,16 +48,16 @@
     <nav>
         <ul class="nav">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">Посты</a>
+                <a class="nav-link" href="{% url 'home' %}">Posts</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'messages' %}">Сообщения</a>
+                <a class="nav-link" href="{% url 'messages' %}">Messages</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'friends' %}">Друзья {{ user|friend_requests }}</a>
+                <a class="nav-link" href="{% url 'friends' %}">Friends {{ user|friend_requests }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'groups' %}">Группы</a>
+                <a class="nav-link" href="{% url 'groups' %}">Groups</a>
             </li>
         </ul>
     </nav>
