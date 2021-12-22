@@ -6,6 +6,18 @@ from django.utils import timezone
 from django.contrib.humanize.templatetags import humanize
 
 
+class Chat(models.Model):
+    participants = models.ManyToManyField(User, related_name='chats')
+    created = models.DateTimeField(auto_now_add=True)
+
+
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='chat')
+    created = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(max_length=250)
+
+
 class Group(models.Model):
     admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name="admin")
     image = models.ImageField(upload_to='group_img', default='group/vk-logo.png')

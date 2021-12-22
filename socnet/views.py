@@ -425,7 +425,7 @@ class PostCreationGroup(LoginRequiredMixin, CreateView):
     success_url = '/'
 
     def form_valid(self, form):
-        form.instance.group_author = Group.objects.get(admin=self.request.user)
+        form.instance.group_author = Group.objects.get(pk=self.kwargs['pk'])
         return super().form_valid(form)
 
 
@@ -474,9 +474,10 @@ class GroupList(ListView):
 
     def get_queryset(self):
         # Group.objects.filter(followers__in=self.request.user).all()
-        return Group.objects.filter(
-            followers__username__contains=self.request.user.username).all() | Group.objects.filter(
+        groups = Group.objects.filter(followers__username__contains=self.request.user.username).all() | Group.objects.filter(
             admin=self.request.user).all()
+
+        return groups.distinct()
         # return Group.objects.filter(admin=self.request.user).all()
 
 

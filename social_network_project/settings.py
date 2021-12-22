@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['192.168.0.168',
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'crispy_forms',
     'socnet.apps.SocnetConfig',
     'django.contrib.admin',
@@ -72,7 +73,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'social_network_project.wsgi.application'
-
+ASGI_APPLICATION = "social_network_project.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
