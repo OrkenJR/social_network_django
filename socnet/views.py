@@ -12,6 +12,7 @@ from .forms import *
 from .models import Post, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import logout as django_logout
+from django.db.models import Q
 
 from .utils import get_friend_request_or_false
 
@@ -72,6 +73,14 @@ class FriendListView(ListView):
                                                      FriendList.objects.get(user=self.request.user).friends.all())
         context['profile_query_set'] = serializers.serialize('json', UserProfile.objects.filter(
             user__in=FriendList.objects.get(user=self.request.user).friends.all()).all())
+
+        context['all_users'] = UserProfile.objects.filter(~Q(user=self.request.user)).all()
+
+        context['all_users_query_set'] = serializers.serialize('json',
+                                                               User.objects.filter(~Q(pk=self.request.user.id)).all())
+        context['all_users_profile_query_set'] = serializers.serialize('json', UserProfile.objects.filter(
+            ~Q(user=self.request.user)).all())
+
         return context
 
     def get_queryset(self):

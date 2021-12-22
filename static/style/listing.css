@@ -3,7 +3,6 @@
 .search-bar {
   padding: 1.5rem;
   background-color: #FFFFFF;
-  border-radius: 10px 10px 0 0;
 }
 
 .search-input {
@@ -57,4 +56,26 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.carousel-indicators {
+  top: -25px;
+  bottom: unset !important;
+}
+
+.carousel-indicators li {
+  background-color: #007bff;
+}
+
+.carousel-indicators li:not(:last-child) {
+  margin-right: 20px;
+}
+
+.list-title {
+  color: #495057;
+  border-radius: 10px 10px 0 0;
+  padding: 1.5rem 1.5rem 0;
+  font-size: 18px;
+  font-weight: 600;
+  background-color: white;
 }
