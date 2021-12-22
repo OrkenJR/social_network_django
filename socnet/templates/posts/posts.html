@@ -28,6 +28,7 @@
 
                 <div class="row card-header">
 
+
                     <a href="{{ post|get_post_author_url }}">
                         <div class=" group-logo-container">
                             <img src="{{ post|get_image_post }}" alt="group-logo" class="logo">
@@ -40,10 +41,13 @@
                         <span class="text-muted post-date">{{ post.date_posted|date:"G:i, F d" }}</span>
                     </div>
 
+
                     {% if post.author.id == user.id or post.group_author.admin.id == user.id %}
-                        <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}"
-                                                                            class="svg-icon"
-                                                                            alt="edit icon"></a>
+
+                        <a href="/post/edit/{{ post.id }}" class="btn svg-icon-btn"><img
+                                src="{% static 'src/icon/edit_icon.png' %}"
+                                class="svg-icon"
+                                alt="edit icon"></a>
 
 
                         <form method="POST" action="/post/delete/{{ post.id }}">
