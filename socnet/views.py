@@ -506,16 +506,20 @@ class GroupList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
+        context['all_groups'] = Group.objects.all()
+        context['user_groups_query_set'] = serializers.serialize('json', Group.objects.filter(
+            followers__username__contains=self.request.user.username).all() | Group.objects.filter(
+            admin=self.request.user).all())
+        context['all_groups_query_set'] = serializers.serialize('json', Group.objects.all())
+
         return context
 
     def get_queryset(self):
-        # Group.objects.filter(followers__in=self.request.user).all()
         groups = Group.objects.filter(
             followers__username__contains=self.request.user.username).all() | Group.objects.filter(
             admin=self.request.user).all()
 
         return groups.distinct()
-        # return Group.objects.filter(admin=self.request.user).all()
 
 
 @login_required

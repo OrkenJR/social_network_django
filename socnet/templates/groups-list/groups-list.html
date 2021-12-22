@@ -2,42 +2,154 @@
 {% load static %}
 {% block title %}Группы{% endblock %}
 {% block style %}
+    <!--suppress JSUnresolvedVariable, HtmlUnknownTarget -->
     <link rel="stylesheet" type="text/css" href="{% static 'style/listing.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'style/groups-list.css' %}">
-{% endblock %}
-{% block script %}
-    <script src="{% static 'js/groups-list.js' %}"></script>
 {% endblock %}
 {% block content %}
-    <!-- SEARCH-BAR -->
 
-    <section class="row search-bar">
+    <div id="carouselExampleIndicators" class="carousel slide" data-interval="false" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
 
-        <div class="input-group">
-            <!--suppress HtmlFormInputWithoutLabel -->
-            <input class="form-control mr-1 search-input" type="text" placeholder="Найти группу...">
-            <button class="btn btn-outline-secondary border" type="button">Искать</button>
-        </div>
-    </section>
+                <div class="list-title">My groups</div>
 
-    {% for group in groups %}
-        <a href="{% url 'group' group.id %}">
-            <section class="row list-element">
-                <div class="list-element-image-wrapper">
-                    <img src="{{ group.image.url }}" alt="group-logo" class="list-element-image">
-                </div>
+                <section class="row search-bar">
 
-                <div class="col-6">
-                    <div class="list-element-info">
-                        <div class="list-element-title">{{ group.name }}</div>
-                        <div class="list-element-text mb-1">{{ group.followers.count }} подписчиков</div>
+                    <div class="input-group">
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input id="search-group" class="form-control mr-1 search-input" type="text"
+                               placeholder="Find group...">
+                        <button class="btn btn-outline-secondary border" type="button">Search</button>
                     </div>
-                </div>
+                </section>
 
-            </section>
-        </a>
-    {% endfor %}
+                <section id="user-group-section">
+                    {% for group in groups %}
+                        <a href="{% url 'group' group.id %}">
+                            <section class="row list-element card">
+                                <div class="list-element-image-wrapper">
+                                    <img src="{{ group.image.url }}" alt="group-logo" class="list-element-image">
+                                </div>
 
+                                <div class="col-6">
+                                    <div class="list-element-info">
+                                        <div class="list-element-title">{{ group.name }}</div>
+                                        <div class="list-element-text mb-1">{{ group.followers.count }} followers
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </section>
+                        </a>
+                    {% endfor %}
+                </section>
+
+            </div>
+            <div class="carousel-item">
+
+                <div class="list-title">All groups</div>
+
+                <section class="row search-bar">
+
+                    <div class="input-group">
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input id="search-all-group" class="form-control mr-1 search-input" type="text"
+                               placeholder="Find group...">
+                        <button class="btn btn-outline-secondary border" type="button">Search</button>
+                    </div>
+                </section>
+
+                <section id="all-group-section">
+                    {% for group in all_groups %}
+                        <a href="{% url 'group' group.id %}">
+                            <section class="row list-element card">
+                                <div class="list-element-image-wrapper">
+                                    <img src="{{ group.image.url }}" alt="group-logo" class="list-element-image">
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="list-element-info">
+                                        <div class="list-element-title">{{ group.name }}</div>
+                                        <div class="list-element-text mb-1">{{ group.followers.count }} followers
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </section>
+                        </a>
+                    {% endfor %}
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        {
+            const user_group_data = '{{ user_groups_query_set }}';
+            const cleaned_user_group_data = JSON.parse(user_group_data.replace(/&quot;/g, '"'));
+
+            const user_group = document.getElementById("user-group-section");
+
+            document.getElementById('search-group').addEventListener('keyup', (e) => {
+                user_group.innerHTML = "";
+
+                cleaned_user_group_data
+                    .filter(group => group.fields.name.toLowerCase().includes(e.target.value.toLowerCase()))
+                    .forEach(group => {
+                        user_group.innerHTML += '<a href=/groups/' + group.pk + '>'
+                            + '<section class="row list-element card">'
+                            + '<div class="list-element-image-wrapper">'
+                            + '<img src="/images/' + group.fields.image + '" class="list-element-image" alt="group-logo">'
+                            + '</div>'
+                            + '<div class="col-6">'
+                            + '<div class="list-element-title">' + group.fields.name + '</div>'
+                            + '<div class="list-element-text mb-1">' + group.fields.followers.length + ' followers</div>'
+                            + '</div>'
+                            + '</section>'
+                            + '</a>';
+                    })
+
+            });
+        }
+
+        {
+            const user_group_data = '{{ all_groups_query_set }}';
+            const cleaned_user_group_data = JSON.parse(user_group_data.replace(/&quot;/g, '"'));
+
+            const user_group = document.getElementById("all-group-section");
+
+            document.getElementById('search-all-group').addEventListener('keyup', (e) => {
+                user_group.innerHTML = "";
+
+                cleaned_user_group_data
+                    .filter(group => group.fields.name.toLowerCase().includes(e.target.value.toLowerCase()))
+                    .forEach(group => {
+                        user_group.innerHTML += '<a href=/groups/' + group.pk + '>'
+                            + '<section class="row list-element card">'
+                            + '<div class="list-element-image-wrapper">'
+                            + '<img src="/images/' + group.fields.image + '" class="list-element-image" alt="group-logo">'
+                            + '</div>'
+                            + '<div class="col-6">'
+                            + '<div class="list-element-title">' + group.fields.name + '</div>'
+                            + '<div class="list-element-text mb-1">' + group.fields.followers.length + ' followers</div>'
+                            + '</div>'
+                            + '</section>'
+                            + '</a>';
+                    })
+
+            });
+        }
+
+
+    </script>
 
 
 {% endblock %}
