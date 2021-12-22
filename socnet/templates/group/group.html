@@ -34,22 +34,19 @@
                         <button id="follow_button" class="btn btn-primary" type="submit">Подписаться</button>
                     </form>
 
-
-
                     <form method="post" action="unfollow" class="unfollow_group" id="{{ group.id }}"
                           style="display: none">
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
                         <button id="unfollow_button" class="btn btn-primary" type="submit">Отписаться</button>
                     </form>
-                    {#                <button class="btn btn-outline-secondary border" type="button">Подписаться</button>#}
+
                 {% elif user in group.followers.all %}
                     <form method="post" action="unfollow" class="unfollow_group" id="{{ group.id }}">
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
                         <button id="unfollow_button" class="btn btn-primary" type="submit">Отписаться</button>
                     </form>
-
 
 
                     <form method="post" action="follow_group" class="follow_group" id="{{ group.id }}"
@@ -69,8 +66,8 @@
     </section>
 
     {% if user.id == group.admin.id %}
-        <section>
-            <a class="btn btn-primary" href="{% url 'post_create_group' group.id%}">Добавить пост</a>
+        <section class="create-post-container">
+            <a class="btn btn-primary" href="{% url 'post_create_group' group.id %}">Добавить пост</a>
         </section>
 
     {% endif %}
@@ -97,7 +94,7 @@
                     </div>
 
                     {% if post.author.id == user.id or post.group_author.admin.id == user.id %}
-                        <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}"
+                        <a href="/post/edit/{{ post.id }}" class="btn svg-icon-container"><img src="{% static 'src/icon/edit_icon.png' %}"
                                                                             class="svg-icon"
                                                                             alt="edit icon"></a>
 

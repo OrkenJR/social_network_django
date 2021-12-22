@@ -25,19 +25,19 @@ $(document).ready(function () {
                 if (type === 'dislike') {
 
                     if (response.is_liked === false) {
-                        dislikeIcon.attr('src', 'static/src/icon/filled_like.svg');
-                        likeIcon.attr('src', 'static/src/icon/like.svg');
+                        dislikeIcon.attr('src', '/static/src/icon/filled_like.svg');
+                        likeIcon.attr('src', '/static/src/icon/like.svg');
                     } else {
-                        dislikeIcon.attr('src', 'static/src/icon/like.svg');
+                        dislikeIcon.attr('src', '/static/src/icon/like.svg');
                     }
                     res = parseInt(response.likes)
                 } else if (type === 'like') {
 
                     if (response.is_liked === false) {
-                        likeIcon.attr('src', 'static/src/icon/filled_like.svg');
-                        dislikeIcon.attr('src', 'static/src/icon/like.svg');
+                        likeIcon.attr('src', '/static/src/icon/filled_like.svg');
+                        dislikeIcon.attr('src', '/static/src/icon/like.svg');
                     } else {
-                        likeIcon.attr('src', 'static/src/icon/like.svg');
+                        likeIcon.attr('src', '/static/src/icon/like.svg');
                     }
                     res = parseInt(response.likes);
                 }

@@ -26,7 +26,9 @@
 <body>
 <header>
 
-    <img src="{% static 'src/images/logo.jpg' %}" alt="logo" class="logo">
+    <a href="{% url 'home' %}">
+        <img src="{% static 'src/images/logo.jpg' %}" alt="logo" class="logo">
+    </a>
 
     <div class="dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"

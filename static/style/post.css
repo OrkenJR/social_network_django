@@ -116,6 +116,10 @@ p {
     align-items: center;
 }
 
+.create-post-container {
+    margin-top: 2rem;
+}
+
 @keyframes bouncing {
 
     0% {
