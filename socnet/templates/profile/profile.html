@@ -52,16 +52,22 @@
         </span>
                 </div>
 
-                <div class="ui-link-wrapper">
+
+                  <div class="ui-link-wrapper">
                     Друзья:
                     <span class="ui-link font-weight-bold">
           {{ friends.count }}
         </span>
                 </div>
 
+
                 {% if is_me %}
                     <a class="btn btn-primary" href="{% url 'edit_profile' my_profile.id %}">Редактировать</a>
                 {% elif is_friend %}
+
+
+                    <a class="btn btn-primary" href="/message/{% get_chat_id chat_id this_user %} ">Написать сообщение</a>
+
                     <form method="post" action="delete_friend" class="delete_friend" id="{{ this_user.id }}">
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
