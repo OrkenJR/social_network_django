@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% load static %}
+{% block title %}message{% endblock %}
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static 'style/messages.css' %}">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/posts.js' %}"></script>
+    <script src="{% static 'js/messages.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <div class="col chat p-0" style="overflow: hidden; outline: none;">
+        <div class="col-inside-lg bg-white">
+            <div class="chat-body">
+
+
+                <h5>{{ friend_name }}</h5>
+
+
+                {% for message in message_list %}
+                    {% if message.user.id == user.id %}
+                        <div class="message right">
+                            <div class="avatar">
+                                <img src="../../../static/src/images/person.png" alt="User name">
+                                <div class="status offline"></div>
+                            </div>
+                            <div class="name">{{ message.user.username }}</div>
+                            <div class="text">
+                                {{ message.text }}
+                            </div>
+                            <div class="send_date">5 мин назад</div>
+                        </div>
+
+
+                    {% else %}
+                        <div class="message left">
+                            <div class="avatar">
+                                <img src="../../../static/src/images/person.png" alt="User name">
+                                <div class="status offline"></div>
+                            </div>
+                            <div class="name">{{ message.user.username }}</div>
+                            <div class="text">
+                                {{ message.text }}
+                            </div>
+                            <div class="send_date">5 мин назад</div>
+                        </div>
+                    {% endif %}
+
+
+                {% endfor %}
+
+
+            </div>
+        </div>
+
+        <form autocomplete="off">
+            <div class="panel-footer">
+                <div class="input-group">
+                    <input id="btn-input" type="text" class="form-control input-sm" placeholder="Введите сообщение..."/>
+                    <span class="input-group-btn ml-2">
+            <button class="btn btn-primary " id="btn-chat">
+              Отправить
+            </button>
+          </span>
+                </div>
+            </div>
+        </form>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,151 @@
+.col-inside-lg {
+  padding: 20px;
+  border-radius: 10px 10px 0 0;
+}
+
+.chat-body {
+  height: inherit;
+  overflow-x: hidden;
+
+  padding-bottom: 3rem;
+}
+
+.chat-body .message.left {
+  padding: 0 0 0 58px;
+  text-align: justify;
+  float: left;
+}
+
+.chat-body .message {
+  position: relative;
+  max-width: 600px;
+  overflow: hidden;
+  clear: both;
+}
+
+.chat-body .message.left .avatar {
+  left: 0;
+}
+
+.chat-body .message .avatar {
+  bottom: 36px;
+}
+
+.chat .avatar {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+}
+
+.chat .avatar img {
+  display: block;
+  border-radius: 20px;
+  height: 100%;
+}
+
+.chat-body .message .name {
+  font-size: 14px;
+  line-height: 36px;
+}
+
+.chat-body .message.left .avatar .status {
+  right: 4px;
+}
+
+.chat-body .message .avatar .status {
+  bottom: 0;
+}
+
+.chat-body .message.left .text {
+  background: #ebebeb;
+  color: #333333;
+  border-radius: 8px 8px 8px 0;
+}
+
+.chat-body .message .text {
+  padding: 12px;
+  font-size: 16px;
+  line-height: 26px;
+  position: relative;
+}
+
+.chat-body .message.left .text:before {
+  left: -30px;
+  border-right-color: #ebebeb;
+  border-right-width: 12px;
+}
+
+.chat-body .message .text:before {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  border-bottom-width: 0;
+}
+
+.chat-body .message.left .send_date {
+  padding-left: 12px;
+  color: #333333;
+}
+
+.chat-body .message .send_date {
+  font-size: 16px;
+  line-height: 36px;
+  position: relative;
+  padding-bottom: 1px;
+}
+
+.chat-body .message.right {
+  padding: 0 58px 0 0;
+  text-align: justify;
+  float: right;
+}
+
+.chat-body .message.right .avatar {
+  right: 0;
+}
+
+.chat-body .message.right .avatar .status {
+  left: 4px;
+}
+
+.chat-body .message.right .text {
+  background: #effdde;
+  color: #000000;
+  border-radius: 8px 8px 0 8px;
+}
+
+.chat-body .message.right .text:before {
+  right: -30px;
+  border-left-color: #effdde;
+  border-left-width: 12px;
+}
+
+.chat-body .message.right .send_date {
+  padding-right: 12px;
+  color: #333333;
+}
+
+.chat-body .message-add {
+  clear: both;
+  position: relative;
+  margin: 20px -20px -20px;
+  padding: 20px;
+  background: white;
+}
+
+.panel-footer {
+  position: fixed;
+  width: calc(68vw - 4rem - 7px);
+  bottom: 0;
+  z-index: 10;
+
+  padding: 10px;
+  background: #FFFFFF;
+  border-top: 1px solid rgb(227, 228, 220);
+}
+
+@media (max-width: 700px) {
+  .panel-footer {
+    width: calc(85vw - 5rem - 7px);
+  }
+}

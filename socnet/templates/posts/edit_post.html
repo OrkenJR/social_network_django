@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Home/Posts{% endblock %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'style/posts.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'js/posts.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+
+    <div class="col-md-12 text-center mt-5 px-0">
+      <a href="#" class="text-decoration-none">
+        <button type="submit" class="btn btn-success btn-lg btn-block">
+          Изменить
+        </button>
+      </a>
+    </div>
+  </form>
+
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+        $( document ).ready(function() {
+            let display = false
+
+            $('.like_form').submit(function(e){
+                e.preventDefault()
+                const post_id = $(this).attr('id')
+                const type = $("input[name='type']",this).val();
+                const url = $(this).attr('action')
+                const likes = parseInt($(`#like-counter${post_id}`).text())
+                const user_id = {{ user.id }}
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id':post_id,
+                        'type': type
+                    },
+                    success: function(response) {
+                        if(type === 'dislike' && response.is_liked === false ) {
+                            res = parseInt(response.likes )
+                        } else if(type === 'like' && response.is_liked === false ){
+                            res = parseInt(response.likes )
+                        }
+
+                        $(`#like-counter${post_id}`).text(res)
+                    },
+                    error: function(response) {
+                        console.log('error', response)
+                    }
+                })
+            })
+
+        });
+</script>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% load static %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load tags %}
+<!DOCTYPE html>
+<!--suppress JSUnresolvedLibraryURL, HtmlUnknownTarget, CssUnusedSymbol, SpellCheckingInspection, JSDeprecatedSymbols -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Default{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'style/global.css' %}">
+
+    <style>
+        .asteriskField {
+            display: none !important;
+        }
+    </style>
+
+    {% block style %}{% endblock %}
+    {% block script %}{% endblock %}
+</head>
+<body>
+<header>
+
+    <img src="{% static 'src/images/logo.jpg' %}" alt="logo" class="logo">
+
+{#    <div class="person-info-wrapper" id='person-info-wrapper-id' onclick="rotate(event)">#}
+{##}
+{#        <span class="name">Menu</span>#}
+{#        <img src="{% static 'src/icon/down-arrow.svg' %}" alt="down-arrow" id="down-icon">#}
+{##}
+{#    </div>#}
+
+        <div class="dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Меню
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="/profile">Профиль</a>
+          <a class="dropdown-item" href="{{ user|get_edit_profile_page }}">Настройки</a>
+          <a class="dropdown-item" href="/logout">Выйти</a>
+        </div>
+      </div>
+
+
+</header>
+
+<div class="popover-wrapper">
+    <div class="popover-content" id="header-popover">
+        <div class="popover-menu-ul">
+            <a href="/profile">Профиль</a>
+            <a href="{{ user|get_edit_profile_page }}">Настройки</a>
+            <a href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+
+
+<main>
+    <nav>
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Посты</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'messages' %}">Сообщения</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'friends' %}">Друзья {{ user|friend_requests }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'groups' %}">Группы</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="main-body container-*">
+        {% block content %}{% endblock %}
+    </div>
+
+</main>
+
+
+<script>
+    let isRotated = false;
+
+    function rotate(event) {
+
+        if (!isRotated) {
+            document.getElementById('down-icon').classList.add('rotated');
+            document.getElementById('header-popover').classList.add('popover-opened');
+            event.stopPropagation();
+
+            document.addEventListener('click', function ($event) {
+
+                let isClickedOutside = true;
+                let isClickedPersonInfoWrapper = false;
+
+                for (const path of $event.composedPath()) {
+                    if (path.id === 'header-popover') {
+                        isClickedOutside = false;
+                    }
+                    if (path.id === 'person-info-wrapper-id') {
+                        isClickedPersonInfoWrapper = true;
+                    }
+                }
+
+                if (isClickedOutside) {
+                    document.removeEventListener('click', arguments.callee, false);
+
+                    if (!isClickedPersonInfoWrapper) {
+                        document.getElementById('person-info-wrapper-id').click();
+                    }
+                }
+
+            });
+        } else {
+            document.getElementById('down-icon').classList.remove('rotated');
+            document.getElementById('header-popover').classList.remove('popover-opened');
+        }
+
+        isRotated = !isRotated;
+
+    }
+
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+</body>
+</html>
