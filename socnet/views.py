@@ -68,6 +68,9 @@ class FriendListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+
+
+
         context['user'] = self.request.user
 
         context['query_set'] = serializers.serialize('json',
@@ -187,6 +190,7 @@ def send_friend_request(request):
             response['response'] = 'error'
 
     return JsonResponse(response)
+
 
 
 def post_comment(request):
@@ -355,6 +359,11 @@ class ProfileViewOther(DetailView):
         context = super(ProfileViewOther, self).get_context_data(**kwargs)
         context['user'] = self.request.user
         context['this_user'] = User.objects.get(pk=self.kwargs.get('pk'))
+        try:
+            context['chat_id'] = Chat.objects.filter(
+            participants__in=[self.request.user.id, context['this_user'].id]).first().id
+        except  :
+            context['chat_id'] = ""
         context['profile'] = UserProfile.objects.get(user=context['this_user'])
         context['my_profile'] = UserProfile.objects.get(user=self.request.user)
         context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk')))
@@ -454,6 +463,16 @@ class ChatView(View):
         chats = Chat.objects.filter(participants__in=[request.user.id]).all()
         return render(request, 'messages-list/messages-list.html', {'user': request.user, 'chats': chats})
 
+class NewMessageView(View):
+    def get(self, request, pk):
+        chat = Chat()
+        chat.save()
+        chat.participants.add(request.user)
+        chat.participants.add(User.objects.get(pk=pk))
+        chat.save()
+
+        print(chat)
+        return redirect('message', chat_id=chat.id)
 
 class MessageView(View):
     def get(self, request, chat_id):

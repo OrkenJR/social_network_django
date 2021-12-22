@@ -65,3 +65,16 @@ def get_chat_member_name(participants, user):
         return participants.filter(~Q(pk=user.id))[0].username
     except:
         return "error"
+
+@register.simple_tag
+def get_chat_id(chat_id, user):
+    if isinstance(chat_id, int):
+        return "new/" + str(user.id)
+    else:
+        try:
+            return Chat.objects.get(chat_id=chat_id).id
+
+        except Exception:
+            return "new/" + str(user.id)
+
+

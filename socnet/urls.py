@@ -34,6 +34,7 @@ urlpatterns = [
     path('<pk>/edit_profile/', ProfileEditView.as_view(), name='edit_profile'),
     path('messages/', ChatView.as_view(), name='messages'),
     path('message/(?P<chat_id>\d+)/$', MessageView.as_view(), name='message'),
+    path('message/new/<int:pk>', NewMessageView.as_view(), name='new_message'),
     path('friends/', FriendListView.as_view(), name='friends'),
     path('groups/', GroupList.as_view(), name='groups'),
     path('groups/<int:pk>', GroupView.as_view(), name='group'),
