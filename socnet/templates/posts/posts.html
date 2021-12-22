@@ -16,7 +16,7 @@
 {% endblock %}
 {% block content %}
 
-    <a class="btn btn-primary" href="{% url 'post_create' %}">Добавить пост</a>
+    <a class="btn btn-primary" href="{% url 'post_create' %}">Add post</a>
 
     {% if posts == 'null' %}
         <div class="no-post"> Нет постов</div>
@@ -223,9 +223,9 @@
                     {{ c_form|crispy }}
                     <input type="hidden" value="{{ post.id }}" name="id">
                     <div class="d-flex card-body">
-                        <button class="btn btn-primary" type="submit">Отправить</button>
+                        <button class="btn btn-primary" type="submit">Send</button>
                         <button post_id="{{ post.id }}" type="button" class="btn btn-danger ml-3 button-cancel"
-                                id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
+                                id="cancel-reply{{ post.id }}" style="display: none;">Cancel reply
                         </button>
                     </div>
                 </form>

@@ -35,7 +35,7 @@
             <div class="list-element-title-with-time"><span>{% get_chat_member_name message.participants user %}</span>
               <span class="text-muted font-weight-normal">12:21</span>
             </div>
-            <div class="list-element-text mb-1">Здарова</div>
+            <div class="list-element-text mb-1">{{ message|get_last_message }}</div>
           </div>
         </div>
 

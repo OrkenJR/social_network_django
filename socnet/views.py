@@ -31,6 +31,7 @@ def unfollow(request):
                     group.followers.remove(user)
                     group.save()
                     response["response"] = "success"
+                    response["count"] = group.followers.count()
                 else:
                     response["response"] = "error"
             else:
@@ -53,6 +54,7 @@ def follow_group(request):
                 group.followers.add(user)
                 group.save()
                 response["response"] = "success"
+                response["count"] = group.followers.count()
             else:
                 response["response"] = "error"
         else:
@@ -68,8 +70,6 @@ class FriendListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-
-
 
         context['user'] = self.request.user
 
@@ -190,7 +190,6 @@ def send_friend_request(request):
             response['response'] = 'error'
 
     return JsonResponse(response)
-
 
 
 def post_comment(request):
@@ -360,16 +359,19 @@ class ProfileViewOther(DetailView):
         context['user'] = self.request.user
         context['this_user'] = User.objects.get(pk=self.kwargs.get('pk'))
         try:
+            res = []
+            temp = Chat.objects.filter(
+                participants__in=[self.request.user.id, context['this_user'].id]).filter(participants__in=[context['this_user'].id]).all()
             context['chat_id'] = Chat.objects.filter(
-            participants__in=[self.request.user.id, context['this_user'].id]).first().id
-        except  :
+                participants__in=[self.request.user.id, context['this_user'].id]).filter(participants__in=[context['user'].id]).filter(participants__in=[context['this_user'].id]).first().id
+
+
+        except Exception as e:
             context['chat_id'] = ""
         context['profile'] = UserProfile.objects.get(user=context['this_user'])
         context['my_profile'] = UserProfile.objects.get(user=self.request.user)
         context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk')))
         context['c_form'] = self.comment_form
-        context['chat_id'] = Chat.objects.filter(
-            participants__in=[self.request.user.id, context['this_user'].id]).first().id
 
         try:
             friend_list = FriendList.objects.get(user=self.request.user)
@@ -430,13 +432,23 @@ class PostCreationView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.group_author = Group.objects.get(admin=self.request.user)
         return super().form_valid(form)
 
 
 class PostCreationGroup(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['body', 'image']
+    template_name = 'posts/create_post.html'
+    success_url = '/'
+
+    def form_valid(self, form):
+        form.instance.group_author = Group.objects.get(pk=self.kwargs['pk'])
+        return super().form_valid(form)
+
+
+class GroupCreationGroup(LoginRequiredMixin, CreateView):
+    model = Group
+    fields = ['name', 'image']
     template_name = 'posts/create_post.html'
     success_url = '/'
 
@@ -463,6 +475,7 @@ class ChatView(View):
         chats = Chat.objects.filter(participants__in=[request.user.id]).all()
         return render(request, 'messages-list/messages-list.html', {'user': request.user, 'chats': chats})
 
+
 class NewMessageView(View):
     def get(self, request, pk):
         chat = Chat()
@@ -473,6 +486,7 @@ class NewMessageView(View):
 
         print(chat)
         return redirect('message', chat_id=chat.id)
+
 
 class MessageView(View):
     def get(self, request, chat_id):
@@ -496,13 +510,10 @@ class MessageView(View):
         )
 
     def post(self, request, chat_id):
-        form = MessageForm(data=request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.chat_id = chat_id
-            message.author = request.user
-            message.save()
-        return redirect(reverse('messages', kwargs={'chat_id': chat_id}))
+        message = Message(chat_id=chat_id, user=request.user, text=request.POST.get("text"))
+
+        message.save()
+        return redirect('message', chat_id=chat_id)
 
 
 class GroupView(DetailView):
@@ -515,7 +526,8 @@ class GroupView(DetailView):
         context['user'] = self.request.user
         context['c_form'] = self.comment_form
         try:
-            context['posts'] = Post.objects.filter(group_author=Group.objects.get(pk=self.kwargs.get('pk'))).all()
+            context['posts'] = Post.objects.filter(
+                group_author=Group.objects.get(pk=self.kwargs.get('pk'))).all().order_by("-date_posted")
         except Post.DoesNotExist:
             context['posts'] = 'null'
         return context

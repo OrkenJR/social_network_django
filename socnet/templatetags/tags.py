@@ -1,7 +1,7 @@
 from django import template
 from django.db.models import Q
 
-from socnet.models import FriendRequest, UserProfile, Group, Chat
+from socnet.models import FriendRequest, UserProfile, Group, Chat, Message
 
 register = template.Library()
 
@@ -50,6 +50,13 @@ def get_edit_profile_page(user):
     except UserProfile.DoesNotExist:
         return "#"
 
+@register.filter
+def get_last_message(chat):
+    try:
+        return Message.objects.filter(chat=chat).last().text
+    except Exception:
+        return ""
+
 
 @register.simple_tag
 def get_chat_by_user(user, friend):
@@ -69,12 +76,13 @@ def get_chat_member_name(participants, user):
 @register.simple_tag
 def get_chat_id(chat_id, user):
     if isinstance(chat_id, int):
-        return "new/" + str(user.id)
-    else:
         try:
-            return Chat.objects.get(chat_id=chat_id).id
+            return Chat.objects.get(pk=chat_id).id
+        except Exception as e:
+            return None
+        # "new/" + str(user.id)
 
-        except Exception:
-            return "new/" + str(user.id)
+    else:
+        return None
 
 

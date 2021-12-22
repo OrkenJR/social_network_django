@@ -6,6 +6,8 @@ $(document).ready(function () {
         e.preventDefault();
         const url = $(this).attr('action');
         const group_id = $(this).attr('id');
+        const follower_count = document.getElementById("follower-count");
+
 
 
         $.ajax({
@@ -19,6 +21,10 @@ $(document).ready(function () {
                 if (response['response'] === "success") {
                     $('.unfollow_group')[0].style.display = 'none'
                     $('.follow_group')[0].style.display = 'block'
+
+
+                    follower_count.innerText=response['count'] + " subscribers"
+
                 } else {
                     alert('Error 404');
                 }
@@ -34,6 +40,7 @@ $(document).ready(function () {
         e.preventDefault();
         const url = $(this).attr('action');
         const group_id = $(this).attr('id');
+        const follower_count = document.getElementById("follower-count");
 
 
         $.ajax({
@@ -49,6 +56,7 @@ $(document).ready(function () {
                     $('.follow_group')[0].style.display = 'none'
                     $('.unfollow_group')[0].style.display = 'block'
 
+                    follower_count.innerText=response['count'] + " subscribers"
                 } else {
                     alert('Error 404');
                 }

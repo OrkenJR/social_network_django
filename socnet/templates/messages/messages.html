@@ -25,7 +25,7 @@
                             <div class="text">
                                 {{ message.text }}
                             </div>
-                            <div class="send_date">5 мин назад</div>
+                            <div class="send_date">{{ message.calculate_days_ago }}</div>
                         </div>
 
 
@@ -39,7 +39,7 @@
                             <div class="text">
                                 {{ message.text }}
                             </div>
-                            <div class="send_date">5 мин назад</div>
+                            <div class="send_date">{{ message.calculate_days_ago }}</div>
                         </div>
                     {% endif %}
 
@@ -50,10 +50,11 @@
             </div>
         </div>
 
-        <form autocomplete="off">
+        <form action="{% url 'message' chat.id %}" method="post" autocomplete="off">
+            {% csrf_token %}
             <div class="panel-footer">
                 <div class="input-group">
-                    <input id="btn-input" type="text" class="form-control input-sm" placeholder="Введите сообщение..."/>
+                    <input id="btn-input" name = "text" type="text" class="form-control input-sm" placeholder="Введите сообщение..."/>
                     <span class="input-group-btn ml-2">
             <button class="btn btn-primary " id="btn-chat">
               Отправить

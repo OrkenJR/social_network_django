@@ -22,28 +22,28 @@
         <div class="row">
             <div class="col d-flex flex-column justify-content-between group-info-wrapper mb-2">
                 <span class="group-name">{{ group.name }}</span>
-                <span class="my-2">{{ group.followers.count }} подписчиков</span>
+                <span id="follower-count" class="my-2">{{ group.followers.count }} subscribers</span>
 
 
                 {% if  user not in group.followers.all %}
                     <form method="post" action="follow_group" class="follow_group" id="{{ group.id }}">
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                        <button id="follow_button" class="btn btn-primary" type="submit">Подписаться</button>
+                        <button id="follow_button" class="btn btn-primary" type="submit">Subscribe</button>
                     </form>
 
                     <form method="post" action="unfollow" class="unfollow_group" id="{{ group.id }}"
                           style="display: none">
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                        <button id="unfollow_button" class="btn btn-primary" type="submit">Отписаться</button>
+                        <button id="unfollow_button" class="btn btn-primary" type="submit">Unsubscribe</button>
                     </form>
 
                 {% elif user in group.followers.all %}
                     <form method="post" action="unfollow" class="unfollow_group" id="{{ group.id }}">
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                        <button id="unfollow_button" class="btn btn-primary" type="submit">Отписаться</button>
+                        <button id="unfollow_button" class="btn btn-primary" type="submit">Unsubscribe</button>
                     </form>
 
 
@@ -51,7 +51,7 @@
                           style="display: none">
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                        <button id="follow_button" class="btn btn-primary" type="submit">Подписаться</button>
+                        <button id="follow_button" class="btn btn-primary" type="submit">Subscribe</button>
                     </form>
                 {% endif %}
 
@@ -65,7 +65,7 @@
 
     {% if user.id == group.admin.id %}
         <section class="create-post-container">
-            <a class="btn btn-primary" href="{% url 'post_create_group' group.id %}">Добавить пост</a>
+            <a class="btn btn-primary" href="{% url 'post_create_group' group.id %}">Add post</a>
         </section>
 
     {% endif %}
@@ -271,9 +271,9 @@
                     {{ c_form|crispy }}
                     <input type="hidden" value="{{ post.id }}" name="id">
                     <div class="d-flex card-body">
-                        <button class="btn btn-primary" type="submit">Отправить</button>
+                        <button class="btn btn-primary" type="submit">Send</button>
                         <button post_id="{{ post.id }}" type="button" class="btn btn-danger ml-3 button-cancel"
-                                id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
+                                id="cancel-reply{{ post.id }}" style="display: none;">Cancel reply
                         </button>
                     </div>
                 </form>

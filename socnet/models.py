@@ -17,6 +17,9 @@ class Message(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     text = models.TextField(max_length=250)
 
+    def calculate_days_ago(self):
+        return humanize.naturaltime(self.created)
+
 
 class Group(models.Model):
     admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name="admin")
