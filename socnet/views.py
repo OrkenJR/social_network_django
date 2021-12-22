@@ -283,7 +283,11 @@ class HomeView(ListView):
 
     def get_queryset(self):
         groups = Group.objects.filter(followers__username__contains=self.request.user.username)
-        friends = FriendList.objects.get(user=self.request.user).friends.all()
+        try:
+            friends = FriendList.objects.get(user=self.request.user).friends.all()
+        except:
+            FriendList(user=self.request.user).save()
+            friends = FriendList.objects.get(user=self.request.user).friends.all()
 
         return Post.objects.filter(group_author__in=groups).order_by('-date_posted') | Post.objects.filter(
             author__in=friends).order_by('-date_posted')
