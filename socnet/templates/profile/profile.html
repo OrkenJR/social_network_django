@@ -159,15 +159,16 @@
 
                     {% if post.author.id == user.id or post.group_author.admin.id == user.id %}
                         <a href="/post/edit/{{ post.id }}" class="btn"><img src="{% static 'src/icon/edit_icon.png' %}"
-                                                                            alt="like"
-                                                                            class="like-icon"></a>
+                                                                            class="svg-icon"
+                                                                            alt="edit icon"></a>
 
 
                         <form method="POST" action="/post/delete/{{ post.id }}">
                             {% csrf_token %}
-                            <label for="delete"><img src="{% static 'src/icon/delete_icon.png' %}" alt="like"
-                                                     class="like-icon"></label>
-                            <input class="btn" type="submit" value="" id="delete">
+                            <label for="delete"><img src="{% static 'src/icon/delete_icon.png' %}"
+                                                     class="svg-icon"
+                                                     alt="delete-icon"></label>
+                            <input class="btn" type="submit" id="delete" value="">
                         </form>
                     {% endif %}
                 </div>

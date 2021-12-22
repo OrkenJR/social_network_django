@@ -63,7 +63,7 @@ p {
     margin-right: 1rem;
 }
 
-.like-icon, .dislike-icon {
+.like-icon, .dislike-icon, .svg-icon {
     width: 25px;
     height: 25px;
     cursor: pointer;
