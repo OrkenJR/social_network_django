@@ -223,7 +223,8 @@ def post_comment(request):
                 'comment_body': new_comment.body,
                 'author': new_comment.user.username,
                 'parent_id': parent_id,
-                'date': new_comment.calculate_days_ago()
+                'date': new_comment.calculate_days_ago(),
+                'comment_count': Comments.objects.filter(post=post).count()
             }
 
             return JsonResponse(response)

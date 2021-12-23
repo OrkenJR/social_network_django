@@ -76,6 +76,8 @@ $(document).ready(function () {
                 const comment = '<div class="col-xs-6" id="comment' + response.comment_id + '">' + comment_heading + comment_body + replies + '</div>'
                 const comment_list = "#comment-list" + response.post_id
 
+                $(`#comment-counter${post_id}`).text(response['comment_count']);
+
                 if (response.parent_id !== null) {
                     replies = "#replies" + response.parent_id
                     $(replies).append(comment);
