@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Группы{% endblock %}
+{% block title %}Groups{% endblock %}
 {% block style %}
     <!--suppress JSUnresolvedVariable, HtmlUnknownTarget -->
     <link rel="stylesheet" type="text/css" href="{% static 'style/listing.css' %}">
@@ -16,6 +16,8 @@
             <div class="carousel-item active">
 
                 <div class="list-title">My groups</div>
+
+
 
                 <section class="row search-bar">
 
@@ -48,6 +50,7 @@
                     {% endfor %}
                 </section>
 
+             <a class="btn btn-primary" href="{% url 'new_group' %}" style="display: block">Create Group</a>
             </div>
             <div class="carousel-item">
 

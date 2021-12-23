@@ -3,7 +3,7 @@
 {% load static %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
-{% block title %}Профиль{% endblock %}
+{% block title %}Profile| {{ this_user.username }}{% endblock %}
 {% block style %}
     <!--suppress HtmlUnknownTarget, HtmlUnknownAttribute -->
     <link rel="stylesheet" type="text/css" href="{% static 'style/post.css' %}">
@@ -29,28 +29,28 @@
             <div class="col d-flex flex-column justify-content-between">
 
                 <div class="p-3">
-                    Имя пользователя:
+                    Username:
                     <span class="font-weight-bold">
           {{ this_user.username }}
         </span>
                 </div>
 
                 <div class="p-3">
-                    Цитата:
+                    Quote:
                     <span class="font-weight-bold">
           {{ profile.quote }}
         </span>
                 </div>
 
                 <div class="p-3">
-                    День рождения:
+                    Birth date:
                     <span class="font-weight-bold">
           {{ profile.birth_date|date:"F d Y" }}
         </span>
                 </div>
 
                 <div class="ui-link-wrapper">
-                    Группы:
+                    Groups:
                     <span class="ui-link font-weight-bold">
           0
         </span>
@@ -58,7 +58,7 @@
 
 
                   <div class="ui-link-wrapper">
-                    Друзья:
+                    Friends:
                     <span class="ui-link font-weight-bold">
           {{ friends.count }}
         </span>
@@ -66,15 +66,15 @@
 
 
                 {% if is_me %}
-                    <a class="btn btn-primary" href="{% url 'edit_profile' my_profile.id %}">Редактировать</a>
+                    <a class="btn btn-primary" href="{% url 'edit_profile' my_profile.id %}">Edit Profile</a>
                 {% elif is_friend %}
 
                     {% get_chat_id chat_id this_user as msg_url%}
 
                     {% if msg_url is not None %}
-                        <a class="btn btn-primary" href="{% url 'message' msg_url %}">Написать сообщение</a>
+                        <a class="btn btn-primary" href="{% url 'message' msg_url %}">Send message</a>
                     {% else %}
-                        <a class="btn btn-primary" href="/message/new/{{ this_user.id }}">Написать сообщение</a>
+                        <a class="btn btn-primary" href="/message/new/{{ this_user.id }}">Send message</a>
                     {% endif %}
 
 
@@ -83,7 +83,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="user_id" value="{{ this_user.id }}">
                         <input type="hidden" name="request_id" value="{{ friend_request }}">
-                        <button id="delete_friend_button" class="btn btn-primary" type="submit">Удалить из друзей
+                        <button id="delete_friend_button" class="btn btn-primary" type="submit">Delete friend
                         </button>
                     </form>
                 {% else %}
@@ -95,7 +95,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ this_user.id }}">
                             <input type="hidden" name="request_id" value="{{ friend_request }}">
-                            <button id="accept_friend_button" class="btn btn-primary" type="submit">Принять</button>
+                            <button id="accept_friend_button" class="btn btn-primary" type="submit">Accept friend request</button>
                         </form>
                     {% elif friend_request_enum == "to" %}
                         {#                Это срабатвывает когда ты отменяешь запрос#}
@@ -104,7 +104,7 @@
                               id="{{ this_user.id }}">
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                            <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
+                            <button id="cancel_request_button" class="btn btn-danger" type="submit">Cancel friend request</button>
                         </form>
 
 
@@ -112,8 +112,8 @@
                               style="display: none">
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                            <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение
-                                дружбы
+                            <button id="send_request_button" class="btn btn-primary" type="submit">Send friend request
+
                             </button>
                         </form>
 
@@ -122,8 +122,7 @@
                         <form method="post" action="send_friend_request" class="send_request" id="{{ this_user.id }}">
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                            <button id="send_request_button" class="btn btn-primary" type="submit">Отправить предложение
-                                дружбы
+                            <button id="send_request_button" class="btn btn-primary" type="submit">Send friend request
                             </button>
                         </form>
 
@@ -132,7 +131,7 @@
                               id="{{ this_user.id }}" style="display: none">
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ this_user.id }}">
-                            <button id="cancel_request_button" class="btn btn-danger" type="submit">Отменить</button>
+                            <button id="cancel_request_button" class="btn btn-danger" type="submit">Cancel friend request</button>
                         </form>
                     {% endif %}
                 {% endif %}
@@ -146,7 +145,7 @@
 
 
     {% if posts == 'null' %}
-        <div class="no-post"> Нет постов</div>
+        <div class="no-post"> No posts</div>
     {% else %}
         {% for post in posts %}
             <section class="post container-* card">
@@ -346,9 +345,9 @@
                     {{ c_form|crispy }}
                     <input type="hidden" value="{{ post.id }}" name="id">
                     <div class="d-flex card-body">
-                        <button class="btn btn-primary" type="submit">Отправить</button>
+                        <button class="btn btn-primary" type="submit">Send</button>
                         <button post_id="{{ post.id }}" type="button" class="btn btn-danger ml-3 button-cancel"
-                                id="cancel-reply{{ post.id }}" style="display: none;">Отменить ответ
+                                id="cancel-reply{{ post.id }}" style="display: none;">Cancel reply
                         </button>
                     </div>
                 </form>

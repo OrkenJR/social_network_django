@@ -370,7 +370,7 @@ class ProfileViewOther(DetailView):
             context['chat_id'] = ""
         context['profile'] = UserProfile.objects.get(user=context['this_user'])
         context['my_profile'] = UserProfile.objects.get(user=self.request.user)
-        context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk')))
+        context['posts'] = Post.objects.filter(author=User.objects.get(pk=self.kwargs.get('pk'))).order_by("-date_posted")
         context['c_form'] = self.comment_form
 
         try:
@@ -439,21 +439,23 @@ class PostCreationGroup(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['body', 'image']
     template_name = 'posts/create_post.html'
-    success_url = '/'
+    success_url = '/groups/'
 
     def form_valid(self, form):
         form.instance.group_author = Group.objects.get(pk=self.kwargs['pk'])
+        self.success_url += str(self.kwargs['pk'])
         return super().form_valid(form)
 
 
-class GroupCreationGroup(LoginRequiredMixin, CreateView):
+class GroupCreation(LoginRequiredMixin, CreateView):
     model = Group
     fields = ['name', 'image']
-    template_name = 'posts/create_post.html'
-    success_url = '/'
+    template_name = 'group/create_group.html'
+    success_url = '/groups/'
 
     def form_valid(self, form):
-        form.instance.group_author = Group.objects.get(pk=self.kwargs['pk'])
+        form.instance.admin = self.request.user
+
         return super().form_valid(form)
 
 
@@ -469,6 +471,19 @@ class PostDeleteView(DeleteView):
     template_name = 'posts/posts.html'
     success_url = '/'
 
+    def delete(self, request, *args, **kwargs):
+        try:
+            Post.objects.get(pk=self.kwargs.get('pk')).delete()
+            return redirect(self.get_success_url())
+        except:
+            return redirect(self.get_success_url())
+
+
+    def get_success_url(self):
+        referer_url = self.request.META.get('HTTP_REFERER')
+        if referer_url:
+            return referer_url
+        return "/"
 
 class ChatView(View):
     def get(self, request):

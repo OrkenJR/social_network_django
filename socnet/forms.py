@@ -17,7 +17,7 @@ class CommentForm(forms.ModelForm):
             'body': forms.Textarea(attrs={'rows': 4, 'cols': 15}),
         }
         labels = {
-            'body': 'Оставьте комментарий',
+            'body': 'Leave a comment',
         }
 
 
